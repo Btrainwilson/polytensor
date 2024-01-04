@@ -2,7 +2,7 @@ PY = python
 VENV = .env
 BIN = $(VENV)/bin
 
-all: test env
+all: test .env
 
 $(VENV): requirements.txt setup.py
 	$(PY) -m venv $(VENV)
@@ -19,6 +19,7 @@ doc: $(VENV)
 .PHONY: test
 test: $(VENV)
 	$(BIN)/pytest -s ./test/testPackage.py 
+	$(BIN)/pytest -s ./test/testGrad.py 
 
 clean:
 	rm -rf $(VENV)
