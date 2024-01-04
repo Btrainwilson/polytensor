@@ -1,4 +1,37 @@
 import torch
+import random
+import itertools
+from beartype import beartype
+
+
+def random_combination(iterable, r):
+    """Random selection from itertools.combinations(iterable, r).
+    From: https://stackoverflow.com/questions/22229796/choose-at-random-from-combinations
+    """
+    pool = tuple(iterable)
+    n = len(pool)
+    indices = sorted(random.sample(range(n), r))
+    return tuple(pool[i] for i in indices)
+
+
+@beartype
+def randomConstant(n: int, num_terms: int, degree: int, sample_fn) -> dict:
+    """
+    Generates random non-zero terms of a polynomial using a filling factor.
+
+    Parameters:
+        n : Dimension of the polynomial
+        num_terms : Number of non-zero terms in the polynomial
+        degree : Degree of the polynomial
+        sample_fn : Function to sample the coefficients of the polynomial
+
+    Returns:
+        Dict : Tensor representing the high-dimensional triangular polynomial matrix.
+    """
+    terms = {}
+    while len(terms) < num_terms:
+        terms[random_combination(list(range(n)), degree)] = sample_fn()
+    return terms
 
 
 def denseFromSparse(coeffs: dict, sample_fn: callable):

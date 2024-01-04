@@ -79,7 +79,7 @@ class SparsePolynomial(Polynomial):
             for i in range(len(key)):
                 x_prod *= x[:, key[i]]
 
-            sum += self.coefficients[key] * x_prod
+            sum += self.coeff_vector[self.coeff_map[key]] * x_prod
         return sum.squeeze()
 
     def validate(self):
@@ -87,13 +87,11 @@ class SparsePolynomial(Polynomial):
         Checks if the coefficients are valid for a sparse polynomial.
         """
 
-        coefficients = self.coefficients
-
-        if len(coefficients) == 0:
+        if len(self.coefficients) == 0:
             raise ValueError("Coefficients cannot be empty.")
 
-        for i in coefficients:
-            if type(coefficients[i]) not in [
+        for term, value in self.coefficients.items():
+            if type(value) not in [
                 int,
                 float,
                 complex,
@@ -106,25 +104,31 @@ class SparsePolynomial(Polynomial):
             for t in zip(
                 [int, float, complex], [torch.int, torch.float, torch.complex]
             ):
-                if type(coefficients[i]) == t[0]:
+                if type(value) == t[0]:
                     if self.dtype != t[1]:
                         logging.warning(
-                            f"Coefficient {i} is type {t[0]} and will be converted to type {self.dtype}."
+                            f"Coefficient {term} is type {type(value)} and will be converted to type {self.dtype}."
                         )
 
-            if (np.diff(i) < 0).all():
+            if (np.diff(term) < 0).all():
                 raise ValueError("Coefficients must be in non-decreasing order.")
 
         # Make sure all coefficients are unique
-        if len(coefficients.keys()) != len(set(coefficients.keys())):
+        if len(self.coefficients.keys()) != len(set(self.coefficients.keys())):
             raise ValueError("Coefficients must be unique.")
 
-        # Make sure all coefficients are differentiable tensors
-        if type(coefficients[i]) not in [torch.Tensor]:
-            for i in coefficients:
-                coefficients[i] = torch.nn.Parameter(
-                    torch.tensor(coefficients[i], dtype=self.dtype)
+        self.coeff_vector = torch.nn.ParameterList()
+        self.coeff_map = {}
+        for i, term in enumerate(self.coefficients.keys()):
+            self.coeff_map[term] = i
+            if type(value) not in [torch.Tensor]:
+                self.coeff_vector.append(
+                    torch.nn.Parameter(
+                        torch.tensor(self.coefficients[term], dtype=self.dtype)
+                    )
                 )
+            else:
+                self.coeff_vector.append(torch.nn.Parameter(self.coefficients[term]))
 
         return True
 
