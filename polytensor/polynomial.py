@@ -38,7 +38,7 @@ class SparsePolynomial(Polynomial):
 
     Args:
 
-        coefficients: :math:`s` Stored as a dictionary. Each key represents the monomial variables and the value is the coefficient.
+        coefficients: :math:`s` Stored as a dictionary. Each key represents the monomial variable indices and the value is the coefficient for the term.
 
     """
 
@@ -62,7 +62,6 @@ class SparsePolynomial(Polynomial):
         Computes the polynomial function specified by the polynomial coefficients and the input tensor x.
 
         Args:
-
             coefficients: Dictionary of coefficients. Each key represents the monomial variables and the value is the coefficient.
 
             x: The input to the polynomial function.
