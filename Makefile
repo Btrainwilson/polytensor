@@ -1,25 +1,40 @@
 PY = python
 VENV = .env
+TENV = .tenv
 BIN = $(VENV)/bin
+TIN = $(TENV)/bin
+PACKAGE = polytensor
 
-all: test .env
+all: test .testenv
 
-$(VENV): requirements.txt setup.py
+$(VENV): requirements.txt
 	$(PY) -m venv $(VENV)
 	$(BIN)/pip install --upgrade -r requirements.txt
-	$(BIN)/pip install -e .
 	touch $(VENV)
+
+$(TENV): testrequirements.txt setup.py
+	$(PY) -m venv $(TENV)
+	$(TIN)/pip install --upgrade -r testrequirements.txt
+	$(TIN)/pip install -e .
+	touch $(TENV)
+
+.PHONY: pypi
+pypi: 
+	python setup.py sdist
+	twine upload dist/*
 
 .PHONY: doc
 doc: $(VENV)
 	@cd docs && make clean
-	@$(BIN)/sphinx-apidoc -o ./docs/source/ ./polytensor
+	@$(BIN)/sphinx-apidoc -o ./docs/source/ ./$(PACKAGE)
 	@cd docs && make html
 
 .PHONY: test
 test: $(VENV)
-	$(BIN)/pytest -s ./test/testPackage.py 
-	$(BIN)/pytest -s ./test/testGrad.py 
+	$(BIN)/pytest -s ./test/testCoefficients.py 
+
+	#$(BIN)/pytest -s ./test/testPackage.py 
+	#$(BIN)/pytest -s ./test/testGrad.py 
 
 clean:
 	rm -rf $(VENV)

@@ -21,7 +21,7 @@ setup(
     url="",
     packages=find_packages(),
     scripts=[],
-    install_requires=[],
+    install_requires=[line for line in read("requirements.txt").split("\n") if line],
     include_package_data=True,
     zip_safe=False,
     classifiers=[

@@ -15,9 +15,6 @@ class Coefficients(ABC):
     def __init__(self):
         raise NotImplementedError("Coefficients is an abstract class.")
 
-    def forward(self):
-        raise NotImplementedError("Coefficients is an abstract class.")
-
     @abstractmethod
     def validate(self):
         """
@@ -35,6 +32,21 @@ class SparseCoefficients(Coefficients):
     def __init__(
         self,
         coefficients: dict,
+    ):
+        super().__init__()
+
+        self.coefficients = coefficients
+
+
+class DenseCoefficients(Coefficients):
+    """
+    Dense tensor polynomial coefficients.
+    """
+
+    @beartype
+    def __init__(
+        self,
+        coefficients: Union[dict, List],
     ):
         super().__init__()
 
