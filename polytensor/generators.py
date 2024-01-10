@@ -1,13 +1,19 @@
 import torch
 import random
-import itertools
 import networkx as nx
 from beartype import beartype
-from typing import List, Union, Tuple, Callable
+from typing import List, Callable, Union
 from collections.abc import Iterable
 
 
 def from_networkx(g: nx.Graph, key="weight"):
+    """
+    Converts a networkx graph to a dictionary of terms for a polynomial.
+
+    Args:
+        g : Networkx graph
+        key : Attribute to use for the value of the term
+    """
     terms = {}
     for node in list(g.nodes(data=key)):
         if node[1] is None:
@@ -46,9 +52,11 @@ def random_combination_generator(iterable: Iterable, k: int):
 
 
 @beartype
-def coeffRandomSampler(n: int, num_terms: int, degree: int, sample_fn) -> dict:
+def coeffRandomSampler(
+    n: int, num_terms: int, degree: int, sample_fn: Callable
+) -> dict:
     """
-    Generates random non-zero terms of a polynomial using a filling factor.
+    Generates random non-zero terms of a polynomial.
 
     Parameters:
         n : Dimension of the polynomial
@@ -65,7 +73,7 @@ def coeffRandomSampler(n: int, num_terms: int, degree: int, sample_fn) -> dict:
     return terms
 
 
-def coeffPUBORandomSampler(n: int, num_terms: List[int], sample_fn: callable):
+def coeffPUBORandomSampler(n: int, num_terms: List[int], sample_fn: Callable):
     """
     Generates random non-zero terms of a polynomial using a filling factor.
 
@@ -83,9 +91,10 @@ def coeffPUBORandomSampler(n: int, num_terms: List[int], sample_fn: callable):
         terms.update(
             coeffRandomSampler(n=n, num_terms=nt, degree=i + 1, sample_fn=sample_fn)
         )
+    return terms
 
 
-def denseFromSparse(coeffs: dict, sample_fn: callable):
+def denseFromSparse(coeffs: dict, num_bits: Union[int, None] = None):
     """
     Generates the coefficients for a dense polynomial from a sparse represention.
 
@@ -102,6 +111,9 @@ def denseFromSparse(coeffs: dict, sample_fn: callable):
         deg = max(len(k), deg)
         n = max(n, max(k))
     n += 1
+
+    if num_bits:
+        n = num_bits
 
     new_coeffs = [torch.nn.Parameter(torch.zeros(1))]
 

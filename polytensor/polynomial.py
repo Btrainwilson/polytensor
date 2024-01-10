@@ -69,17 +69,20 @@ class SparsePolynomial(Polynomial):
         Returns:
             torch.Tensor : The value of the polynomial function.
         """
+        r = False
         if len(x.shape) == 1:
             x = x.unsqueeze(0)
+            r = True
 
         sum = 0
+        # Scales as O(n*d) where n is the number of terms and d is the degree of the term
         for key in self.coefficients:
-            x_prod = 1
-            for i in range(len(key)):
-                x_prod *= x[:, key[i]]
+            sum += self.coeff_vector[self.coeff_map[key]] * torch.prod(x[:, key])
 
-            sum += self.coeff_vector[self.coeff_map[key]] * x_prod
-        return sum.squeeze()
+        if r:
+            return sum.squeeze()
+
+        return sum
 
     def validate(self):
         """
@@ -109,8 +112,10 @@ class SparsePolynomial(Polynomial):
                             f"Coefficient {term} is type {type(value)} and will be converted to type {self.dtype}."
                         )
 
-            if (np.diff(term) < 0).all():
-                raise ValueError("Coefficients must be in non-decreasing order.")
+            if len(term) > 1 and (np.diff(term) < 0).all():
+                raise ValueError(
+                    f"Coefficients {np.diff(term)} must be in non-decreasing order."
+                )
 
         # Make sure all coefficients are unique
         if len(self.coefficients.keys()) != len(set(self.coefficients.keys())):
@@ -219,12 +224,14 @@ class DensePolynomial(Polynomial):
         if len(coefficients) == 0:
             raise ValueError("Coefficients cannot be empty.")
 
-        for d in range(1, len(coefficients)):
+        for d in range(2, len(coefficients)):
             terms = torch.nonzero(coefficients[d]).squeeze()
 
             for i in range(terms.shape[0]):
                 if (np.diff(terms[i].numpy()) < 0).all():
-                    raise ValueError("Coefficients must be in non-decreasing order.")
+                    raise ValueError(
+                        f"Coefficients {terms[i].numpy()} must be in non-decreasing order."
+                    )
 
         return True
 

@@ -1,7 +1,4 @@
 import polytensor
-import pytest
-import numpy as np
-import torch
 import networkx as nx
 
 

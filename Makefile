@@ -1,11 +1,11 @@
+PACKAGE = polytensor
 PY = python
 VENV = .env
 TENV = .tenv
 BIN = $(VENV)/bin
 TIN = $(TENV)/bin
-PACKAGE = polytensor
 
-all: test .testenv
+all: doc test .testenv
 
 $(VENV): requirements.txt
 	$(PY) -m venv $(VENV)
@@ -23,17 +23,20 @@ pypi:
 	python setup.py sdist
 	twine upload dist/*
 
+.PHONY: initdoc
+initdoc: $(TENV)
+	@$(TIN)/sphinx-quickstart docs
+
 .PHONY: doc
-doc: $(VENV)
+doc: $(TENV)
 	@cd docs && make clean
-	@$(BIN)/sphinx-apidoc -o ./docs/source/ ./$(PACKAGE)
+	@$(TIN)/sphinx-apidoc -o ./docs/source/ ./$(PACKAGE)
 	@cd docs && make html
 
 .PHONY: test
-test: $(VENV)
-	$(BIN)/pytest -s ./test/testCoefficients.py 
-
-	#$(BIN)/pytest -s ./test/testPackage.py 
+test: $(TENV)
+	#$(BIN)/pytest -s ./test/testCoefficients.py 
+	$(TIN)/pytest -s ./test/testPackage.py 
 	#$(BIN)/pytest -s ./test/testGrad.py 
 
 clean:

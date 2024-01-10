@@ -11,7 +11,7 @@ def read(filename):
 setup(
     name="polytensor",
     version="0.0.1",
-    author="NanoML Team",
+    author="Blake Wilson",
     author_email="wilso692@purdue.edu",
     description="",
     long_description=read("README.rst"),

@@ -33,7 +33,6 @@ nvidia-nccl-cu12==2.18.1
 nvidia-nvjitlink-cu12==12.3.101
 nvidia-nvtx-cu12==12.1.105
 pkginfo==1.9.6
--e git+ssh://git@github.com/Btrainwilson/polytensor.git@9068bef2df22bb3467ad40c904f821c72862df23#egg=polytensor
 pycparser==2.21
 Pygments==2.17.2
 readme-renderer==42.0
