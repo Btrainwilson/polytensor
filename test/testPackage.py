@@ -1,29 +1,50 @@
 import polytensor
-import pytest
-import numpy as np
 import torch
+import random
+import numpy as np
 
 
 def testPolynomial():
-    print("\nTest 1: Generate from Coefficients")
+    print("\nTest 1: Generate from Dictionary of Coefficients")
 
-    coefficients = {
-        (0, 1): 2,
-        (0, 0): -1,
-        (1, 1): 4,
+    print("\nTest 2: Sparse vs Dense Polynomial")
+    for _ in range(10):
+        num_bits = random.randint(5, 30)
+
+        coefficients = polytensor.generators.coeffPUBORandomSampler(
+            num_bits, [num_bits, 5, 5, 5], lambda: torch.rand(1)
+        )
+
+        p = polytensor.SparsePolynomial(coefficients)
+
+        x = torch.bernoulli(torch.ones(num_bits) * 0.5)
+
+        q = polytensor.DensePolynomial(
+            coefficients=polytensor.generators.denseFromSparse(
+                coefficients, num_bits=num_bits
+            )
+        )
+
+        assert np.allclose(p(x).detach().cpu().numpy(), q(x).detach().cpu().numpy())
+
+    terms = {
+        tuple([0]): 1.0,  # 1.0 * x_0
+        tuple([1]): 2.0,  # 2.0 * x_1
+        (0, 1): 3.0,  # 3.0 * x_0 * x_1
+        (1, 1): 5.0,  # 5.0 * x_1^2
     }
-    print("coefficients:", coefficients)
-    p = polytensor.SparsePolynomial(coefficients)
-    print("p:", p)
-    x = torch.tensor([0, 1], dtype=torch.float)
-    print("x:", x)
 
-    print("\nTest 2: Generate from Tensors")
+    poly = polytensor.SparsePolynomial(terms)
 
-    tensors = polytensor.generators.denseFromSparse(
-        coefficients, lambda n, deg: torch.rand(1)
-    )
+    x = torch.Tensor([1.0, 2.0])
 
-    q = polytensor.DensePolynomial(coefficients=tensors)
-    print("p(x):", p(x))
-    print("q(x):", q(x))
+    # Evaluate the polynomial at x
+    y_p = poly(x)
+
+    # Which is equivalent to
+    y_s = 0.0
+
+    for term, v in terms.items():
+        y_s += v * torch.prod(x[..., term])
+
+    assert np.allclose(y_p.detach().cpu().numpy(), y_s.detach().cpu().numpy())
