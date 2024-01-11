@@ -10,8 +10,7 @@
 import torch
 import numpy as np
 from beartype import beartype
-from beartype.typing import List
-from typing import Union
+from beartype.typing import List, Union
 from enum import Enum
 from abc import ABC, abstractmethod
 import logging
