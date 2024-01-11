@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to ``polytensor`` documentation!
-======================================
+``polytensor``
+==============
 
 .. toctree::
    :maxdepth: 2
@@ -28,10 +28,10 @@ API
 
 
 Usage
-=====
+-----
 
 Installation
-------------
+~~~~~~~~~~~~
 
 To use ``polytensor``, first install it using ``pip`` from the command line:
 
