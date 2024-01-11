@@ -6,13 +6,6 @@
 ``polytensor``
 ==============
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
-
-   polytensor
-
-
 ``polytensor`` is a python package for CUDA-accelerated, parallel polynomial evaluation and regression.
 
 .. math::

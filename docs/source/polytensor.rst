@@ -1,8 +1,3 @@
-polytensor package
-==================
-
-Submodules
-----------
 
 polytensor.polynomial module
 ----------------------------
@@ -12,10 +7,3 @@ polytensor.polynomial module
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
-
-.. automodule:: polytensor
-   :members:
-   :undoc-members:
-   :show-inheritance:
