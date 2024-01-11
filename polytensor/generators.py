@@ -2,7 +2,7 @@ import torch
 import random
 import networkx as nx
 from beartype import beartype
-from typing import List, Callable, Union
+from beartype.typing import List, Callable, Union
 from collections.abc import Iterable
 
 
