@@ -5,7 +5,7 @@ TENV = .tenv
 BIN = $(VENV)/bin
 TIN = $(TENV)/bin
 
-all: doc test .testenv
+all: doc test .tenv
 
 $(VENV): requirements.txt
 	$(PY) -m venv $(VENV)
