@@ -35,15 +35,12 @@ To use ``polytensor``, first install it using ``pip`` from the command line:
    $ source .venv/bin/activate
    $ (.venv) python -m pip install git+https://github.com/btrainwilson/polytensor.git
 
-Or, unzip the package and install it using ``pip`` from the command line:
+Or, clone the package and install it using ``pip`` from the command line:
 
 .. code-block:: console
 
-    $ python -m venv .venv
-    $ source .venv/bin/activate
-    $ (.venv) unzip polytensor.zip
-    $ (.venv) cd polytensor
-    $ (.venv) python -m pip install -e .
+    $ git clone git+https://github.com/btrainwilson/polytensor.git
+    $ python -m pip install -e polytensor
 
 Examples
 --------
@@ -64,18 +61,18 @@ The easiest way to begin is by creating a polynomial with a list of terms and co
    f(x) = x_0 + 2 x_1 + 3 x_0 x_1 + 5 x_1^2
 
 
-Each term is specified by a list of indeces and a value. For example, the coefficient ``3`` is associated with the term ``3 x_0 x_1``, the coefficient ``1`` is associated with the term ``x_0``, etc.
+Each term is specified by a list of indeces and a value. For example, the coefficient :math:`3` is associated with the term :math:`3 x_0 x_1`, the coefficient :math:`1` is associated with the term :math:`x_0`, etc.
 
 .. code-block:: python
 
     terms = {
-      tuple((0)) : 1.0,        # 1.0 * x_0
-      tuple((1)) : 2.0,        # 2.0 * x_1
+      (0,)   : 1.0,     # 1.0 * x_0
+      (1,)   : 2.0,     # 2.0 * x_1
       (0, 1) : 3.0,     # 3.0 * x_0 * x_1
       (1, 1) : 5.0,     # 5.0 * x_1^2
     }
 
-We can also create random polynomials using the ``polytensor.generators`` module. For example, the following code creates a random polynomial with 10 variables by sampling a Gaussian :math:`\mathcal{N}(0,1)`.
+We can also create random polynomials using the ``polytensor.generators`` module. For example, the following expression is a random polynomial with 10 variables where the coefficients are sampled with a Gaussian :math:`\mathcal{N}(0,1)`.
 
 .. math::
 
@@ -94,10 +91,11 @@ where :math:`s` is the term in the polynomial, e.g., :math:`s = (i, j, k)`.
     num_per_degree = [num_vars, 5, 5, 5]
 
     # Function to sample coefficients
-    sample_fn = lambda: torch.rand(1)
+    sample_fn = lambda: torch.randn(1)
 
 
-    coefficients = polytensor.generators.coeffPUBORandomSampler(
+    # Create coefficients for a random polynomial with 10 variables and 5 terms per degree up to degree 4
+    terms = polytensor.generators.coeffPUBORandomSampler(
         n=num_vars, num_terms=num_per_degree,sample_fn=sample_fn
         )
 
@@ -113,13 +111,13 @@ Under the hood, the terms remain in their dictionary definition, where the keys 
 
 
     terms = {
-      tuple((0)) : 1.0,       # 1.0 * x_0
-      tuple((1)) : 2.0,       # 2.0 * x_1
-      (0, 1) : 3.0,           # 3.0 * x_0 * x_1
-      (1, 1) : 5.0,           # 5.0 * x_1^2
+      (0,)   : 1.0,     # 1.0 * x_0
+      (1,)   : 2.0,     # 2.0 * x_1
+      (0, 1) : 3.0,     # 3.0 * x_0 * x_1
+      (1, 1) : 5.0,     # 5.0 * x_1^2
     }
 
-    poly = polytensor.SparsePolynomial(coefficients)
+    poly = polytensor.SparsePolynomial(terms)
 
     x = torch.Tensor([1.0, 2.0])
 
@@ -128,13 +126,12 @@ Under the hood, the terms remain in their dictionary definition, where the keys 
 
     # Which is equivalent to
     y_s = 0.0
-
     for term, v in terms.items():
-        y_s += v * torch.prod(x[..., term])
+        y_s = y_s + v * torch.prod(x[..., term])
 
     assert np.allclose(y_p.detach().cpu().numpy(), y_s.detach().cpu().numpy())
 
-In fact, the loop above is exactly how the polynomial is evaluated. The ``SparsePolynomial`` class is a wrapper around the dictionary of terms and coefficients. The ``__call__`` method loops through the terms and evaluates the polynomial at the given point ``x``. Now, we consider dense polynomials.
+In fact, the loop above is exactly how the polynomial is evaluated. The ``SparsePolynomial`` class is a wrapper around the dictionary of terms and coefficients. The ``__call__`` method loops through the terms and evaluates the polynomial at the given point :math:`x`. Now, we consider dense polynomials.
 
 
 Dense Polynomials
