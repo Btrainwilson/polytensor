@@ -48,3 +48,25 @@ def testPolynomial():
         y_s += v * torch.prod(x[..., term])
 
     assert np.allclose(y_p.detach().cpu().numpy(), y_s.detach().cpu().numpy())
+
+
+def testGraphDenseVsSparse():
+    print("\nTest Graph Dense Vs Sparse")
+    num_bits = 20
+    num_terms = 1
+    for degreeNum in range(1, 3):
+        coefficients = polytensor.generators.coeffRandomSampler(
+            num_bits, num_terms, degreeNum, lambda: torch.rand(1)
+        )
+
+        p = polytensor.SparsePolynomial(coefficients)
+
+        x = torch.bernoulli(torch.ones(num_bits) * 0.5)
+
+        coefficients = polytensor.generators.denseFromSparse(
+            coefficients, num_bits=num_bits
+        )
+
+        q = polytensor.DensePolynomial(coefficients=coefficients)
+
+        assert np.allclose(p(x).detach().cpu().numpy(), q(x).detach().cpu().numpy())

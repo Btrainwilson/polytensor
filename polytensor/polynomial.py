@@ -226,6 +226,10 @@ class DensePolynomial(Polynomial):
         for d in range(2, len(coefficients)):
             terms = torch.nonzero(coefficients[d]).squeeze()
 
+            # Check if only one term exists
+            if terms.dim() == 1:
+                terms = terms.unsqueeze(0)
+
             for i in range(terms.shape[0]):
                 if (np.diff(terms[i].numpy()) < 0).all():
                     raise ValueError(
