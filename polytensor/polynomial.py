@@ -61,22 +61,24 @@ class SparsePolynomial(Polynomial):
         Computes the polynomial function specified by the polynomial coefficients and the input tensor x.
 
         Args:
-            coefficients: Dictionary of coefficients. Each key represents the monomial variables and the value is the coefficient.
+            coefficients (dict): Each key represents the monomial variables and the value is the coefficient.
 
-            x: The input to the polynomial function.
+            x (torch.Tensor): The input to the polynomial function.
 
         Returns:
             torch.Tensor : The value of the polynomial function.
         """
         r = False
+        sum = 0.0
+
         if len(x.shape) == 1:
             x = x.unsqueeze(0)
             r = True
 
-        sum = 0
+
         # Scales as O(n*d) where n is the number of terms and d is the degree of the term
-        for key in self.coefficients:
-            sum += self.coeff_vector[self.coeff_map[key]] * torch.prod(x[:, key])
+        for key, v in self.coefficients.items():
+            sum = sum + v * torch.prod(x[:, key])
 
         if r:
             return sum.squeeze()
