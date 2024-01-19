@@ -30,8 +30,7 @@ initdoc: $(TENV)
 .PHONY: doc
 doc: $(TENV)
 	@cd docs && make clean
-	@$(TIN)/sphinx-apidoc -o ./docs/source/ ./$(PACKAGE)
-	@cd docs && make html
+	@$(TIN)/sphinx-build -M html docs/source docs/build
 
 .PHONY: test
 test: $(TENV)
