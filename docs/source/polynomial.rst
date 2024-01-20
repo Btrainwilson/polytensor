@@ -1,0 +1,2 @@
+.. autofunction:: polytensor.Polynomial
+

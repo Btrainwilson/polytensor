@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>polytensor &#8212; PolyTensor 0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
+    <script src="_static/documentation_options.js?v=2709fde1"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="icon" href="_static/moonrabbit.png"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="polytensor.polynomial module" href="polytensor.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <a class="reference internal image-reference" href="_images/moonrabbit.png"><img alt="polytensor logo" class="align-center" src="_images/moonrabbit.png" style="width: 300px;" /></a>
+<section id="polytensor">
+<h1><code class="docutils literal notranslate"><span class="pre">polytensor</span></code><a class="headerlink" href="#polytensor" title="Link to this heading">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">polytensor</span></code> is a python package for CUDA-accelerated, parallel polynomial evaluation and regression.</p>
+<div class="math notranslate nohighlight">
+\[f(x) = c + \sum_{i=0}^n a_i x_i + \sum_{i &lt; j}^n a_{i,j} x_i x_j + ...\]</div>
+<section id="api">
+<h2>API<a class="headerlink" href="#api" title="Link to this heading">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="polytensor.html">polytensor.polynomial module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="polytensor.html#polytensor.polynomial.DensePolynomial"><code class="docutils literal notranslate"><span class="pre">DensePolynomial</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="polytensor.html#polytensor.polynomial.Polynomial"><code class="docutils literal notranslate"><span class="pre">Polynomial</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="polytensor.html#polytensor.polynomial.SparsePolynomial"><code class="docutils literal notranslate"><span class="pre">SparsePolynomial</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h2>
+<section id="installation">
+<h3>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h3>
+<p>To use <code class="docutils literal notranslate"><span class="pre">polytensor</span></code>, first install it using <code class="docutils literal notranslate"><span class="pre">pip</span></code> from the command line:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
+<span class="gp">$ </span><span class="nb">source</span><span class="w"> </span>.venv/bin/activate
+<span class="gp">$ </span><span class="o">(</span>.venv<span class="o">)</span><span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/btrainwilson/polytensor.git
+</pre></div>
+</div>
+<p>Or, clone the package and install it using <code class="docutils literal notranslate"><span class="pre">pip</span></code> from the command line:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>git<span class="w"> </span>clone<span class="w"> </span>git+https://github.com/btrainwilson/polytensor.git
+<span class="gp">$ </span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>polytensor
+</pre></div>
+</div>
+</section>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h2>
+<p>All of the following examples assume that you have imported <code class="docutils literal notranslate"><span class="pre">polytensor</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">polytensor</span>
+</pre></div>
+</div>
+<section id="polynomial">
+<h3>Polynomial<a class="headerlink" href="#polynomial" title="Link to this heading">¶</a></h3>
+<p>The easiest way to begin is by creating a polynomial with a list of terms and coefficients. Consider the following polynomial</p>
+<div class="math notranslate nohighlight">
+\[f(x) = x_0 + 2 x_1 + 3 x_0 x_1 + 5 x_1^2\]</div>
+<p>Each term is specified by a list of indeces and a value. For example, the coefficient <span class="math notranslate nohighlight">\(3\)</span> is associated with the term <span class="math notranslate nohighlight">\(3 x_0 x_1\)</span>, the coefficient <span class="math notranslate nohighlight">\(1\)</span> is associated with the term <span class="math notranslate nohighlight">\(x_0\)</span>, etc.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">terms</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="p">(</span><span class="mi">0</span><span class="p">,)</span>   <span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>     <span class="c1"># 1.0 * x_0</span>
+  <span class="p">(</span><span class="mi">1</span><span class="p">,)</span>   <span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>     <span class="c1"># 2.0 * x_1</span>
+  <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="p">:</span> <span class="mf">3.0</span><span class="p">,</span>     <span class="c1"># 3.0 * x_0 * x_1</span>
+  <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="p">:</span> <span class="mf">5.0</span><span class="p">,</span>     <span class="c1"># 5.0 * x_1^2</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>We can also create random polynomials using the <code class="docutils literal notranslate"><span class="pre">polytensor.generators</span></code> module. For example, the following expression is a random polynomial with 10 variables where the coefficients are sampled with a Gaussian <span class="math notranslate nohighlight">\(\mathcal{N}(0,1)\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[f(x) = \sum_{i=0}^{10} a_i x_i + \sum_{i &lt; j}^{10} a_{i,j} x_i x_j + \sum_{i &lt; j &lt; k}^{10} a_{i,j, k} x_i x_j x_k + ... : a_s \sim \mathcal{N}(0, 1)\]</div>
+<p>where <span class="math notranslate nohighlight">\(s\)</span> is the term in the polynomial, e.g., <span class="math notranslate nohighlight">\(s = (i, j, k)\)</span>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="n">num_vars</span> <span class="o">=</span> <span class="mi">10</span>
+
+<span class="c1"># Create a random polynomial with 10 variables and 5 terms per degree</span>
+<span class="n">num_per_degree</span> <span class="o">=</span> <span class="p">[</span><span class="n">num_vars</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+
+<span class="c1"># Function to sample coefficients</span>
+<span class="n">sample_fn</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+
+<span class="c1"># Create coefficients for a random polynomial with 10 variables and 5 terms per degree up to degree 4</span>
+<span class="n">terms</span> <span class="o">=</span> <span class="n">polytensor</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">coeffPUBORandomSampler</span><span class="p">(</span>
+    <span class="n">n</span><span class="o">=</span><span class="n">num_vars</span><span class="p">,</span> <span class="n">num_terms</span><span class="o">=</span><span class="n">num_per_degree</span><span class="p">,</span><span class="n">sample_fn</span><span class="o">=</span><span class="n">sample_fn</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<p>Given these coefficients, we can create a polynomial using either a sparse representation or a dense representation. The sparse representation is more efficient for polynomials with fewer terms, while the dense representation is more efficient for polynomials with more terms.</p>
+</section>
+<section id="sparse-polynomials">
+<h3>Sparse Polynomials<a class="headerlink" href="#sparse-polynomials" title="Link to this heading">¶</a></h3>
+<p>Under the hood, the terms remain in their dictionary definition, where the keys are tuples of indeces and the values are the coefficients. For example, the following code creates a sparse polynomial with the coefficients from the previous example.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">terms</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="p">(</span><span class="mi">0</span><span class="p">,)</span>   <span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>     <span class="c1"># 1.0 * x_0</span>
+  <span class="p">(</span><span class="mi">1</span><span class="p">,)</span>   <span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>     <span class="c1"># 2.0 * x_1</span>
+  <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="p">:</span> <span class="mf">3.0</span><span class="p">,</span>     <span class="c1"># 3.0 * x_0 * x_1</span>
+  <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="p">:</span> <span class="mf">5.0</span><span class="p">,</span>     <span class="c1"># 5.0 * x_1^2</span>
+<span class="p">}</span>
+
+<span class="n">poly</span> <span class="o">=</span> <span class="n">polytensor</span><span class="o">.</span><span class="n">SparsePolynomial</span><span class="p">(</span><span class="n">terms</span><span class="p">)</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
+
+<span class="c1"># Evaluate the polynomial at x</span>
+<span class="n">y_p</span> <span class="o">=</span> <span class="n">poly</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="c1"># Which is equivalent to</span>
+<span class="n">y_s</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="k">for</span> <span class="n">term</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">terms</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">y_s</span> <span class="o">=</span> <span class="n">y_s</span> <span class="o">+</span> <span class="n">v</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">term</span><span class="p">])</span>
+
+<span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">y_p</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">y_s</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>In fact, the loop above is exactly how the polynomial is evaluated. The <code class="docutils literal notranslate"><span class="pre">SparsePolynomial</span></code> class is a wrapper around the dictionary of terms and coefficients. The <code class="docutils literal notranslate"><span class="pre">__call__</span></code> method loops through the terms and evaluates the polynomial at the given point <span class="math notranslate nohighlight">\(x\)</span>. Now, we consider dense polynomials.</p>
+</section>
+<section id="dense-polynomials">
+<h3>Dense Polynomials<a class="headerlink" href="#dense-polynomials" title="Link to this heading">¶</a></h3>
+<p>At a glance, the <code class="docutils literal notranslate"><span class="pre">DensePolynomial</span></code> stores the terms in a list of dense <code class="docutils literal notranslate"><span class="pre">torch.Tensor</span></code> s, one tensor for each degree, where the indeces of the tensor are the term indeces and the tensor element is the coefficient. The <code class="docutils literal notranslate"><span class="pre">DensePolynomial</span></code> class exploits the <code class="docutils literal notranslate"><span class="pre">einsum</span></code> function in <code class="docutils literal notranslate"><span class="pre">torch</span></code> to evaluate the polynomial using the dense tensors.</p>
+</section>
+<section id="sparse-vs-dense-representation">
+<h3>Sparse vs Dense Representation<a class="headerlink" href="#sparse-vs-dense-representation" title="Link to this heading">¶</a></h3>
+<p>When to use the sparse representation? The sparse representation is more efficient than the dense representation when the number of terms <span class="math notranslate nohighlight">\(N\)</span> is small compared to the number of possible terms, i.e.,</p>
+<div class="math notranslate nohighlight">
+\[N &lt;&lt; n^d\]</div>
+<p>For <code class="docutils literal notranslate"><span class="pre">polytensor.DensePolynomial</span></code>, The number of terms in the tensor for degree <span class="math notranslate nohighlight">\(d\)</span> is <span class="math notranslate nohighlight">\(n^d\)</span> where <span class="math notranslate nohighlight">\(n\)</span> is the number of variables in the polynomial. The einsum computation using this representation is way faster than the sparse enumeration if the number of terms is similar to the size of the tensors. Under the hood of <code class="docutils literal notranslate"><span class="pre">polytensor.DensePolynomial</span></code>, <code class="docutils literal notranslate"><span class="pre">torch.einsum</span></code> exploits CUDA acceleration to parallelize the computation. However, if the number of terms in the polynomial is nowhere close to the number of terms in the dense tensor representation, then most of the terms in the dense tensors will be <span class="math notranslate nohighlight">\(0\)</span> and the sparse polynomial is a better representation. For example, if your polynomial has <span class="math notranslate nohighlight">\(100\)</span> terms, most of which are quadratic or linear, then a dense representation is likely more efficient. However, if those 100 terms are distributed throughout 6 degree monomials, then a sparse representation is more efficient.</p>
+</section>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="#">
+              <img class="logo" src="_static/moonrabbit.png" alt="Logo"/>
+            </a></p>
+<h1 class="logo"><a href="#">PolyTensor</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="polytensor.html">polytensor.polynomial module</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+      <li>Next: <a href="polytensor.html" title="next chapter">polytensor.polynomial module</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2023, NanoML.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

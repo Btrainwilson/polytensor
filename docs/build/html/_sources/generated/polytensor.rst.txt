@@ -1,0 +1,23 @@
+﻿polytensor
+==========
+
+.. automodule:: polytensor
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
