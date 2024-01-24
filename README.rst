@@ -21,7 +21,6 @@ Why?
 ----
 
 .. Why ``polytensor``?::
-
    Evaluating standard, non-matrix polynomials in a CUDA-accelerated, parallel fashion has never been easier! Polytensor is a PyTorch-based package for computing millions of polynomials in parallel on a CUDA GPU. We offer two flavors, sparse-vanilla and dense-rocky-road. My work on quantum-inspired energy models requires computing all kinds of polynomials for optimization and dynamic simulations, and I wanted a clean way of computing the energy function for these models in parallel.
 
 
