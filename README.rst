@@ -13,14 +13,11 @@
 
 ``polytensor`` is a python package for CUDA-accelerated, parallel polynomial evaluation and regression.
 
-.. math::
-
-   f(x) = c + \sum_{i=0}^n a_i x_i + \sum_{i < j}^n a_{i,j} x_i x_j + ... 
+$$f(x) = c + \\sum_{i=0}^n a_i x_i + \\sum_{i < j}^n a_{i,j} x_i x_j + ... $$
 
 Why?
 ----
 
-.. Why::
    Evaluating standard, non-matrix polynomials in a CUDA-accelerated, parallel fashion has never been easier! Polytensor is a PyTorch-based package for computing millions of polynomials in parallel on a CUDA GPU. We offer two flavors, sparse-vanilla and dense-rocky-road. My work on quantum-inspired energy models requires computing all kinds of polynomials for optimization and dynamic simulations, and I wanted a clean way of computing the energy function for these models in parallel.
 
 
@@ -30,10 +27,11 @@ Quick Start
 To use the latest stable version of ``polytensor``, install it using ``pip`` from the command line:
 
 .. code-block:: console
+
    $ pip install polytensor
 
 
-For the latest development version, install it directly from this repo using ``pip`` from the command line:
+For the latest development version, install it directly from this repo:
 
 .. code-block:: console
 
@@ -41,7 +39,7 @@ For the latest development version, install it directly from this repo using ``p
    $ source .venv/bin/activate
    $ (.venv) python -m pip install git+https://github.com/btrainwilson/polytensor.git
 
-Or, if you want to develop ``polytensor``, install it in editable mode using ``pip`` from the command line:
+Or, if you want to develop ``polytensor``, install it in editable mode:
 
 .. code-block:: console
 
@@ -66,12 +64,11 @@ Polynomial
 The easiest way to begin is by creating a polynomial with a list of terms and coefficients. Consider the following polynomial 
 
 
-.. math::
 
-   f(x) = x_0 + 2 x_1 + 3 x_0 x_1 + 5 x_1^2
+$$f(x) = x_0 + 2 x_1 + 3 x_0 x_1 + 5 x_1^2$$
 
 
-Each term is specified by a list of indeces and a value. For example, the coefficient :math:`3` is associated with the term :math:`3 x_0 x_1`, the coefficient :math:`1` is associated with the term :math:`x_0`, etc.
+Each term is specified by a list of indeces and a value. For example, the coefficient $3$ is associated with the term $3 x_0 x_1$, the coefficient $1$ is associated with the term $x_0$, etc.
 
 .. code-block:: python
 
@@ -82,13 +79,11 @@ Each term is specified by a list of indeces and a value. For example, the coeffi
       (1, 1) : 5.0,     # 5.0 * x_1^2
     }
 
-We can also create random polynomials using the ``polytensor.generators`` module. For example, the following expression is a random polynomial with 10 variables where the coefficients are sampled with a Gaussian :math:`\mathcal{N}(0,1)`.
+We can also create random polynomials using the ``polytensor.generators`` module. For example, the following expression is a random polynomial with 10 variables where the coefficients are sampled with a Gaussian $\\mathcal{N}(0,1)$.
 
-.. math::
+$$f(x) = \\sum_{i=0}^{10} a_i x_i + \\sum_{i < j}^{10} a_{i,j} x_i x_j + \\sum_{i < j < k}^{10} a_{i,j, k} x_i x_j x_k + ... : a_s \\sim \\mathcal{N}(0, 1)$$
 
-   f(x) = \sum_{i=0}^{10} a_i x_i + \sum_{i < j}^{10} a_{i,j} x_i x_j + \sum_{i < j < k}^{10} a_{i,j, k} x_i x_j x_k + ... : a_s \sim \mathcal{N}(0, 1)
-
-where :math:`s` is the term in the polynomial, e.g., :math:`s = (i, j, k)`.
+where $s$ is the term in the polynomial, e.g., $s = (i, j, k)$.
 
 
 .. code-block:: python
@@ -155,7 +150,6 @@ Sparse vs Dense Representation
 
 When to use the sparse representation? The sparse representation is more efficient than the dense representation when the number of terms :math:`N` is small compared to the number of possible terms, i.e., 
 
-.. math::
-    N << n^d
+$$N << n^d$$
 
 For ``polytensor.DensePolynomial``, The number of terms in the tensor for degree :math:`d` is :math:`n^d` where :math:`n` is the number of variables in the polynomial. The einsum computation using this representation is way faster than the sparse enumeration if the number of terms is similar to the size of the tensors. Under the hood of ``polytensor.DensePolynomial``, ``torch.einsum`` exploits CUDA acceleration to parallelize the computation. However, if the number of terms in the polynomial is nowhere close to the number of terms in the dense tensor representation, then most of the terms in the dense tensors will be :math:`0` and the sparse polynomial is a better representation. For example, if your polynomial has :math:`100` terms, most of which are quadratic or linear, then a dense representation is likely more efficient. However, if those 100 terms are distributed throughout 6 degree monomials, then a sparse representation is more efficient.
