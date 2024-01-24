@@ -168,7 +168,12 @@ To set up the test environment (.tenv virtual environment), run the following co
     $ make .tenv
     $ source .tenv/bin/activate
 
-This will handle installing the development dependencies and setting up the virtual environment. To run the tests, run the following command:
+This will handle installing the development dependencies and setting up the virtual environment. 
+
+Testing
+~~~~~~~~~~~~~
+
+To run the tests, run the following command:
 
 .. code-block:: console
 
@@ -176,6 +181,27 @@ This will handle installing the development dependencies and setting up the virt
 
 If everything is set up properly, the tests should pass with green text at the bottom. 
 
+Documentation
+~~~~~~~~~~~~~
 
+To build the documentation, run the following command:
+
+.. code-block:: console
+
+    $ make doc
+
+This will build the documentation in the ``docs/build`` directory. 
+To view the documentation,  
+
+.. code-block:: console
+
+    $ make serve 
+
+and navigate to `localhost:8018` in your browser.
+
+Pull Requests
+~~~~~~~~~~~~~
+
+To submit a contribution, fork the repo and submit a pull request with your changes. We will review the request by running our test suites to ensure the interface is not broken and then check for code cleanliness and correctness. To increase the chances of accepting a PR, build a unit test in the test/ directory as a part of the PR.  
 
 
