@@ -153,3 +153,29 @@ When to use the sparse representation? The sparse representation is more efficie
 $$N << n^d$$
 
 For ``polytensor.DensePolynomial``, The number of terms in the tensor for degree :math:`d` is :math:`n^d` where :math:`n` is the number of variables in the polynomial. The einsum computation using this representation is way faster than the sparse enumeration if the number of terms is similar to the size of the tensors. Under the hood of ``polytensor.DensePolynomial``, ``torch.einsum`` exploits CUDA acceleration to parallelize the computation. However, if the number of terms in the polynomial is nowhere close to the number of terms in the dense tensor representation, then most of the terms in the dense tensors will be :math:`0` and the sparse polynomial is a better representation. For example, if your polynomial has :math:`100` terms, most of which are quadratic or linear, then a dense representation is likely more efficient. However, if those 100 terms are distributed throughout 6 degree monomials, then a sparse representation is more efficient.
+
+Contributing
+------------
+
+We welcome contributions! 
+
+To set up the test environment (.tenv virtual environment), run the following commands:
+
+.. code-block:: console
+
+    $ git clone git+https://github.com/btrainwilson/polytensor.git
+    $ cd polytensor
+    $ make .tenv
+    $ source .tenv/bin/activate
+
+This will handle installing the development dependencies and setting up the virtual environment. To run the tests, run the following command:
+
+.. code-block:: console
+
+    $ make test
+
+If everything is set up properly, the tests should pass with green text at the bottom. 
+
+
+
+
