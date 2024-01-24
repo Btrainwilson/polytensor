@@ -5,7 +5,7 @@
 
 .. image:: ./docs/source/_static/icon/moonrabbit.svg
   :align: center
-  :width: 300
+  :width: 50
   :alt: polytensor logo 
 
 ``polytensor``
