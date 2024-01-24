@@ -20,26 +20,28 @@
 Why?
 ----
 
-.. Why ``polytensor``?::
+.. Why::
    Evaluating standard, non-matrix polynomials in a CUDA-accelerated, parallel fashion has never been easier! Polytensor is a PyTorch-based package for computing millions of polynomials in parallel on a CUDA GPU. We offer two flavors, sparse-vanilla and dense-rocky-road. My work on quantum-inspired energy models requires computing all kinds of polynomials for optimization and dynamic simulations, and I wanted a clean way of computing the energy function for these models in parallel.
 
 
-Installation
+Quick Start
 ------------
 
-To use ``polytensor``, first install it using ``pip`` from the command line:
+To use the latest stable version of ``polytensor``, install it using ``pip`` from the command line:
 
 .. code-block:: console
    $ pip install polytensor
 
-.. code-block:: console
 
+For the latest development version, install it directly from this repo using ``pip`` from the command line:
+
+.. code-block:: console
 
    $ python -m venv .venv
    $ source .venv/bin/activate
    $ (.venv) python -m pip install git+https://github.com/btrainwilson/polytensor.git
 
-Or, clone the package and install it using ``pip`` from the command line:
+Or, if you want to develop ``polytensor``, install it in editable mode using ``pip`` from the command line:
 
 .. code-block:: console
 
