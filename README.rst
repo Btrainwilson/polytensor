@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-.. image:: ./_static/icon/moonrabbit.png
+.. image:: ./docs/source/_static/icon/moonrabbit.svg
   :align: center
   :width: 300
   :alt: polytensor logo 
