@@ -17,12 +17,16 @@
 
    f(x) = c + \sum_{i=0}^n a_i x_i + \sum_{i < j}^n a_{i,j} x_i x_j + ... 
 
+Why?
+----
 
-Usage
------
+.. Why ``polytensor``?::
+
+   Evaluating standard, non-matrix polynomials in a CUDA-accelerated, parallel fashion has never been easier! Polytensor is a PyTorch-based package for computing millions of polynomials in parallel on a CUDA GPU. We offer two flavors, sparse-vanilla and dense-rocky-road. My work on quantum-inspired energy models requires computing all kinds of polynomials for optimization and dynamic simulations, and I wanted a clean way of computing the energy function for these models in parallel.
+
 
 Installation
-~~~~~~~~~~~~
+------------
 
 To use ``polytensor``, first install it using ``pip`` from the command line:
 
@@ -42,6 +46,10 @@ Or, clone the package and install it using ``pip`` from the command line:
 
     $ git clone git+https://github.com/btrainwilson/polytensor.git
     $ python -m pip install -e polytensor
+
+
+Usage
+-----
 
 Examples
 --------
