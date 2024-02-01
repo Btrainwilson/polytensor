@@ -75,10 +75,9 @@ class SparsePolynomial(Polynomial):
             x = x.unsqueeze(0)
             r = True
 
-
         # Scales as O(n*d) where n is the number of terms and d is the degree of the term
         for key, v in self.coefficients.items():
-            sum = sum + v * torch.prod(x[:, key])
+            sum = sum + v * torch.prod(x[:, key], dim=-1, keepdim=True)
 
         if r:
             return sum.squeeze()
