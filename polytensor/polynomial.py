@@ -212,7 +212,7 @@ class DensePolynomial(Polynomial):
             params.append(x)
             params.append([..., i])
 
-        return torch.einsum(*params)
+        return torch.einsum(*params).unsqueeze(-1)
 
     def validate(self):
         """

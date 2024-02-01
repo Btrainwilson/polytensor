@@ -56,6 +56,7 @@ def testGraphDenseVsSparse():
     print("\nTest Graph Dense Vs Sparse")
     num_bits = 20
     num_terms = 5
+    b = 5
     for degreeNum in range(1, 3):
         coefficients = polytensor.generators.coeffRandomSampler(
             num_bits, num_terms, degreeNum, lambda: torch.rand(1)
@@ -63,12 +64,19 @@ def testGraphDenseVsSparse():
 
         p = polytensor.SparsePolynomial(coefficients)
 
-        x = torch.bernoulli(torch.ones(num_bits) * 0.5)
+        x = torch.bernoulli(torch.ones([b, num_bits]) * 0.5)
 
         coefficients = polytensor.generators.denseFromSparse(
             coefficients, num_bits=num_bits
         )
 
         q = polytensor.DensePolynomial(coefficients=coefficients)
+
+        y_p = p(x)
+        y_q = q(x)
+
+        assert y_p.shape == torch.Size([b, 1])
+
+        assert y_q.shape == torch.Size([b, 1])
 
         assert np.allclose(p(x).detach().cpu().numpy(), q(x).detach().cpu().numpy())
