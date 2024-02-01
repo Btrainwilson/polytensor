@@ -36,7 +36,7 @@ def testPolynomial():
 
     poly = polytensor.SparsePolynomial(terms)
 
-    x = torch.Tensor([1.0, 2.0])
+    x = torch.Tensor([[1.0, 2.0], [3.0, 4.0]]).float()
 
     # Evaluate the polynomial at x
     y_p = poly(x)
@@ -45,15 +45,17 @@ def testPolynomial():
     y_s = 0.0
 
     for term, v in terms.items():
-        y_s += v * torch.prod(x[..., term])
+        y_s += v * torch.prod(x[..., term], dim=-1, keepdim=True)
 
     assert np.allclose(y_p.detach().cpu().numpy(), y_s.detach().cpu().numpy())
+
+    assert y_p.shape == torch.Size([2, 1])
 
 
 def testGraphDenseVsSparse():
     print("\nTest Graph Dense Vs Sparse")
     num_bits = 20
-    num_terms = 1
+    num_terms = 5
     for degreeNum in range(1, 3):
         coefficients = polytensor.generators.coeffRandomSampler(
             num_bits, num_terms, degreeNum, lambda: torch.rand(1)
