@@ -9,7 +9,7 @@ def read(filename):
 
 
 setup(
-    name="polytensor",
+    name="polytensor2",
     version="0.0.2",
     author="Blake Wilson",
     author_email="wilso692@purdue.edu",
