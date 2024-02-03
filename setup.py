@@ -30,7 +30,7 @@ setup(
         "mpmath>=1.3.0",
         "networkx>=3.2.1",
         "numpy>=1.26.3",
-       # "nvidia-cublas-cu12>=12.1.3.1",
+        "nvidia-cublas-cu12>=12.1.3.1",
         "nvidia-cuda-cupti-cu12>=12.1.105",
         "nvidia-cuda-nvrtc-cu12>=12.1.105",
         "nvidia-cuda-runtime-cu12>=12.1.105",
