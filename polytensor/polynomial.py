@@ -301,7 +301,10 @@ class PottsModelOneHot(Polynomial):
             r = True
 
         for key, v in self.coefficients.items():
-            sum = sum - v * torch.sum(torch.prod(og, dim=1), dim=1)
+            one_hot_encoded = torch.stack([torch.nn.functional.one_hot(elem) for elem in x[:, key]])
+
+
+            sum = sum - v * torch.sum(torch.prod(one_hot_encoded, dim=1), dim=1)
 
         if r:
             return sum.squeeze()
