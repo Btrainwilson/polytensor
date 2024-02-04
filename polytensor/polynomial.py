@@ -275,3 +275,36 @@ class PottsModel(Polynomial):
 
         return sum
         
+
+class PottsModelOneHot(Polynomial):
+    
+    @beartype
+    def __init__(
+        self,
+        coefficients: dict[List[int], Union[complex, float, int, torch.Tensor]],
+        device: str = "cpu",
+        dtype=torch.float,
+        **kwargs,
+    ):
+        super().__init__()
+        self.coefficients = coefficients
+        self.device = device
+        self.dtype = dtype
+
+    def forward(self, x):
+      
+        r = False
+        sum = 0.0
+
+        if len(x.shape) == 1:
+            x = x.unsqueeze(0)
+            r = True
+
+        for key, v in self.coefficients.items():
+            sum = sum - v * torch.sum(torch.prod(og, dim=1), dim=1)
+
+        if r:
+            return sum.squeeze()
+
+        return sum
+        
