@@ -258,6 +258,8 @@ class PottsModel(Polynomial):
         self.device = device
         self.dtype = dtype
 
+        self.validate()
+
     def forward(self, x):
       
         r = False
@@ -274,6 +276,9 @@ class PottsModel(Polynomial):
             return sum.squeeze()
 
         return sum
+
+    def validate(self):
+        return
         
 
 class PottsModelOneHot(Polynomial):
@@ -290,6 +295,8 @@ class PottsModelOneHot(Polynomial):
         self.coefficients = coefficients
         self.device = device
         self.dtype = dtype
+
+        self.validate()
 
     def forward(self, x):
       
@@ -309,3 +316,5 @@ class PottsModelOneHot(Polynomial):
 
         return sum
         
+    def validate(self):
+        return

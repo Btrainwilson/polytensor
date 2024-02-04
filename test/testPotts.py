@@ -1,4 +1,5 @@
-from polytensor.polynomial import PottsModel, PottModelOneHot
+import polytensor
+from polytensor.polynomial import PottsModel, PottsModelOneHot
 import torch
 from torch.nn import functional as F
 import random
@@ -14,13 +15,17 @@ def testPotts():
         num_bits, [num_bits, 5, 5, 5], lambda: torch.rand(1)
     )
 
-    p = polytensor.PottsModel(coefficients)
+    p = PottsModel(coefficients)
     p2 = PottsModelOneHot(coefficients)
 
     x = torch.tensor([[1, 0, 1, 2, 0, 1]])
 
-    print(p(x))
-    print(p2(x))
+    for item in coefficients.keys():
+        print(item, x[:, item], coefficients[item])
+    #print("Coeff:\n", coefficients.keys())
+    #print("Vals:\n", [x[:, key] for key in coefficients.keys()])
+    print("Result", p(x))
+    print("One-hot result", p2(x))
 
 
 testPotts()
