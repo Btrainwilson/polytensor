@@ -16,9 +16,31 @@ def testPotts():
     )
 
     p = PottsModel(coefficients)
-    p2 = PottsModelOneHot(coefficients)
+    p2 = PottsModelOneHot(coefficients, 3)
 
     x = torch.tensor([[1, 0, 1, 2, 0, 1]])
+
+    for item in coefficients.keys():
+        print(item, x[:, item], coefficients[item])
+    #print("Coeff:\n", coefficients.keys())
+    #print("Vals:\n", [x[:, key] for key in coefficients.keys()])
+    print("Result", p(x))
+    print("One-hot result", p2(x))
+
+
+
+    print("\nTest 2")
+
+    num_bits = 6 #random.randint(5, 30)
+
+    coefficients = polytensor.generators.coeffPUBORandomSampler(
+        num_bits, [num_bits, 5, 5, 5], lambda: torch.rand(1)
+    )
+
+    p = PottsModel(coefficients)
+    p2 = PottsModelOneHot(coefficients, 2)
+
+    x = F.one_hot(torch.arange(0, num_bits), num_bits)
 
     for item in coefficients.keys():
         print(item, x[:, item], coefficients[item])

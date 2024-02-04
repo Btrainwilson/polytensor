@@ -287,6 +287,7 @@ class PottsModelOneHot(Polynomial):
     def __init__(
         self,
         coefficients: dict[List[int], Union[complex, float, int, torch.Tensor]],
+        num_classes,
         device: str = "cpu",
         dtype=torch.float,
         **kwargs,
@@ -295,6 +296,8 @@ class PottsModelOneHot(Polynomial):
         self.coefficients = coefficients
         self.device = device
         self.dtype = dtype
+
+        self.num_classes = num_classes
 
         self.validate()
 
@@ -308,7 +311,7 @@ class PottsModelOneHot(Polynomial):
             r = True
 
         for key, v in self.coefficients.items():
-            one_hot_encoded = torch.stack([torch.nn.functional.one_hot(elem) for elem in x[:, key].long()])
+            one_hot_encoded = torch.stack([torch.nn.functional.one_hot(elem, num_classes=self.num_classes) for elem in x[:, key].long()])
             sum = sum - v * torch.sum(torch.prod(one_hot_encoded, dim=1), dim=1)
 
         if r:
