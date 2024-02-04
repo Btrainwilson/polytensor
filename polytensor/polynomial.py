@@ -241,3 +241,37 @@ class DensePolynomial(Polynomial):
 
     def __repr__(self):
         return f"DensePolynomial(degree={len(self.coefficients)-1})"
+
+
+class PottsModel(Polynomial):
+    
+    @beartype
+    def __init__(
+        self,
+        coefficients: dict[List[int], Union[complex, float, int, torch.Tensor]],
+        device: str = "cpu",
+        dtype=torch.float,
+        **kwargs,
+    ):
+        super().__init__()
+        self.coefficients = coefficients
+        self.device = device
+        self.dtype = dtype
+
+    def forward(self, x):
+      
+        r = False
+        sum = 0.0
+
+        if len(x.shape) == 1:
+            x = x.unsqueeze(0)
+            r = True
+
+        for key, v in self.coefficients.items():
+            sum = sum - v * torch.eq(torch.max(x[:, key], 1).values, torch.min(x[:, key], 1).values)
+
+        if r:
+            return sum.squeeze()
+
+        return sum
+        
