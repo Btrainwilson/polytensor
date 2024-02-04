@@ -22,6 +22,7 @@ def testPotts():
 
     for item in coefficients.keys():
         print(item, x[:, item], coefficients[item])
+
     #print("Coeff:\n", coefficients.keys())
     #print("Vals:\n", [x[:, key] for key in coefficients.keys()])
     print("Result", p(x))
@@ -44,6 +45,7 @@ def testPotts():
 
     for item in coefficients.keys():
         print(item, x[:, item], coefficients[item])
+        
     #print("Coeff:\n", coefficients.keys())
     #print("Vals:\n", [x[:, key] for key in coefficients.keys()])
     print("Result", p(x))
