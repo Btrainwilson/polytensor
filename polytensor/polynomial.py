@@ -289,49 +289,54 @@ class PottsModel(Polynomial):
 
 
 class PottsModelOneHot(Polynomial):
-  
-   @beartype
-   def __init__(
-       self,
-       coefficients: dict[List[int], Union[complex, float, int, torch.Tensor]],
-       num_classes,
-       device: str = "cpu",
-       dtype=torch.float,
-       **kwargs,
-   ):
-       super().__init__()
-       self.coefficients = coefficients
-       self.device = device
-       self.dtype = dtype
+    @beartype
+    def __init__(
+        self,
+        coefficients: dict[List[int], Union[complex, float, int, torch.Tensor]],
+        device: str = "cpu",
+        dtype=torch.float,
+        **kwargs,
+    ):
+        super().__init__()
+        self.coefficients = coefficients
+        self.device = device
+        self.dtype = dtype
 
 
-       self.num_classes = num_classes
+        self.validate()
 
 
-       self.validate()
+    def forward(self, x):
+        
+        r = False
+        sum = 0.0
+
+        x_size = len(x.size())
+        
+        if x_size <=2:
+            x_size = 3
 
 
-   def forward(self, x):
-    
-       r = False
-       sum = 0.0
+        if len(x.shape) == 1:
+            x = x.unsqueeze(0)
+            r = True
 
 
-       if len(x.shape) == 1:
-           x = x.unsqueeze(0)
-           r = True
+        for key, v in self.coefficients.items():
+            #print("1", x[:, key])
+            #print("2", torch.prod(x[:, key], dim=0))
+            print("1", x[:, key])
+            for n in range(x_size - 2):
+                x[:, key] = torch.prod(x[:, key], dim=n)
+            
+            print("2", x[:, key])
+            sum = sum - v * torch.sum(x[:, key], dim=0)
+
+        if r:
+            return sum.squeeze()
 
 
-       for key, v in self.coefficients.items():
-           one_hot_encoded = torch.stack([torch.nn.functional.one_hot(elem, num_classes=self.num_classes) for elem in x[:, key].long()])
-           sum = sum - v * torch.sum(torch.prod(one_hot_encoded, dim=1), dim=1)
-
-
-       if r:
-           return sum.squeeze()
-
-
-       return sum
-      
-   def validate(self):
-       return
+        return sum
+        
+    def validate(self):
+        return
