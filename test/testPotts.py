@@ -110,8 +110,8 @@ def testPottsOneHotMultiDimension():
 
     print("Normal result", p1(og))
 
-def testSpeed():
-    print("\nTest Speed")
+def testB():
+    print("\nTest B")
 
     num_bits = 5 #random.randint(5, 30)
     coefficients = polytensor.generators.coeffPUBORandomSampler(
@@ -140,4 +140,4 @@ testPotts()
 testPottsMultiDimension()
 testPottsOneHot()
 testPottsOneHotMultiDimension()
-testSpeed()
+testB()
