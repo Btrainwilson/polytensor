@@ -94,7 +94,9 @@ def coeffPUBORandomSampler(n: int, num_terms: List[int], sample_fn: Callable):
     return terms
 
 
-def denseFromSparse(coeffs: dict, num_bits: Union[int, None] = None):
+def denseFromSparse(
+    coeffs: dict, num_bits: Union[int, None] = None, device="cpu", dtype=torch.float
+):
     """
     Generates the coefficients for a dense polynomial from a sparse represention.
 
@@ -115,10 +117,10 @@ def denseFromSparse(coeffs: dict, num_bits: Union[int, None] = None):
     if num_bits:
         n = num_bits
 
-    new_coeffs = [torch.nn.Parameter(torch.zeros(1))]
+    new_coeffs = [torch.nn.Parameter(torch.zeros(1, dtype=dtype, device=device))]
 
     for i in range(1, deg + 1):
-        new_coeffs.append(torch.zeros(*([n] * i)))
+        new_coeffs.append(torch.zeros(*([n] * i), dtype=dtype, device=device))
 
     for k, v in coeffs.items():
         new_coeffs[len(k)][k] = v
@@ -126,10 +128,12 @@ def denseFromSparse(coeffs: dict, num_bits: Union[int, None] = None):
     return new_coeffs
 
 
-def dense(n: int, degree: int):
-    tensors = [torch.nn.Parameter(torch.rand([1]))]
+def dense(n: int, degree: int, device="cuda", dtype=torch.float):
+    tensors = [torch.nn.Parameter(torch.rand([1], device=device, dtype=device))]
 
     for i in range(1, degree + 1):
-        tensors.append(torch.nn.Parameter(torch.rand(*([n] * i))))
+        tensors.append(
+            torch.nn.Parameter(torch.rand(*([n] * i), device=device, dtype=device))
+        )
 
     return tensors
