@@ -128,11 +128,19 @@ class SparsePolynomial(Polynomial):
             if type(value) not in [torch.Tensor]:
                 self.coeff_vector.append(
                     torch.nn.Parameter(
-                        torch.tensor(self.coefficients[term], dtype=self.dtype)
+                        torch.tensor(
+                            self.coefficients[term],
+                            dtype=self.dtype,
+                            device=self.device,
+                        )
                     )
                 )
             else:
-                self.coeff_vector.append(torch.nn.Parameter(self.coefficients[term]))
+                self.coeff_vector.append(
+                    torch.nn.Parameter(
+                        self.coefficients[term].to(self.dtype).to(self.device)
+                    )
+                )
 
         return True
 
@@ -232,7 +240,7 @@ class DensePolynomial(Polynomial):
                 terms = terms.unsqueeze(0)
 
             for i in range(terms.shape[0]):
-                if (np.diff(terms[i].numpy()) < 0).all():
+                if (np.diff(terms[i].cpu().numpy()) < 0).all():
                     raise ValueError(
                         f"Coefficients {terms[i].numpy()} must be in non-decreasing order."
                     )
