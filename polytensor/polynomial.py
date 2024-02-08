@@ -243,48 +243,43 @@ class DensePolynomial(Polynomial):
         return f"DensePolynomial(degree={len(self.coefficients)-1})"
 
 class PottsModel(Polynomial):
-  
-   @beartype
-   def __init__(
-       self,
-       coefficients: dict[List[int], Union[complex, float, int, torch.Tensor]],
-       device: str = "cpu",
-       dtype=torch.float,
-       **kwargs,
-   ):
-       super().__init__()
-       self.coefficients = coefficients
-       self.device = device
-       self.dtype = dtype
+    @beartype
+    def __init__(
+        self,
+        coefficients: dict[List[int], Union[complex, float, int, torch.Tensor]],
+        device: str = "cpu",
+        dtype=torch.float,
+        **kwargs,
+    ):
+        super().__init__()
+        self.coefficients = coefficients
+        self.device = device
+        self.dtype = dtype
 
 
-       self.validate()
+        self.validate()
 
 
-   def forward(self, x):
-    
-       r = False
-       sum = 0.0
+    def forward(self, x):
+        r = False
+        sum = 0.0
+
+        if len(x.shape) == 1:
+            x = x.unsqueeze(0)
+            r = True
+
+        idx = len(x.shape) - 1
+        for key, v in self.coefficients.items():
+            sum = sum - v * torch.eq(torch.max(x[..., key], idx).values, torch.min(x[..., key], idx).values)
+
+        if r:
+            return sum.squeeze()
+
+        return sum
 
 
-       if len(x.shape) == 1:
-           x = x.unsqueeze(0)
-           r = True
-
-
-       for key, v in self.coefficients.items():
-           sum = sum - v * torch.eq(torch.max(x[:, key], 1).values, torch.min(x[:, key], 1).values)
-
-
-       if r:
-           return sum.squeeze()
-
-
-       return sum
-
-
-   def validate(self):
-       return
+    def validate(self):
+        return
       
 
 
@@ -307,30 +302,17 @@ class PottsModelOneHot(Polynomial):
 
 
     def forward(self, x):
-        
         r = False
         sum = 0.0
-
-        x_size = len(x.size())
-        
-        if x_size <=2:
-            x_size = 3
-
 
         if len(x.shape) == 1:
             x = x.unsqueeze(0)
             r = True
 
-
+        x_dim = len(x.shape) - 2
+        
         for key, v in self.coefficients.items():
-            #print("1", x[:, key])
-            #print("2", torch.prod(x[:, key], dim=0))
-            print("1", x[:, key])
-            for n in range(x_size - 2):
-                x[:, key] = torch.prod(x[:, key], dim=n)
-            
-            print("2", x[:, key])
-            sum = sum - v * torch.sum(x[:, key], dim=0)
+            sum = sum - v * torch.sum(torch.prod(x[..., key,:], dim=x_dim), dim=x_dim)
 
         if r:
             return sum.squeeze()

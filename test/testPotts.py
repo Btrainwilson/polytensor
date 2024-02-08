@@ -20,13 +20,37 @@ def testPotts():
     x = torch.tensor([[1, 0, 1, 2, 0, 1]])
 
     for item in coefficients.keys():
-        print()
-        #print(item, x[:, item], coefficients[item])
+        print(item, x[:, item], coefficients[item])
     #print("Coeff:\n", coefficients.keys())
     #print("Vals:\n", [x[:, key] for key in coefficients.keys()])
     print("Result", p(x))
 
+def testPottsMultiDimension():
+    print("\nTest Potts Multi Dimension")
 
+    num_bits = 6 #random.randint(5, 30)
+    dimensions = 1
+    batch_size = 5
+    size = (batch_size,) + (num_bits,) * dimensions
+    size = (4, 2, 2, 6)
+
+    coefficients = polytensor.generators.coeffPUBORandomSampler(
+        num_bits, [num_bits, 5, 5, 5], lambda: torch.rand(1)
+    )
+    print(coefficients)
+
+    p = PottsModel(coefficients)
+
+    x = torch.randint(0, 3, size=size)
+    print("x: ", x.shape)
+    print(x)
+
+    result = p(x)
+    print("Result", result.shape)
+    print(result)
+
+
+def testPottsOneHot():
 
     print("\nTest One Hot")
 
@@ -36,33 +60,84 @@ def testPotts():
         num_bits, [num_bits, 5, 5, 5], lambda: torch.rand(1)
     )
 
+    p1 = PottsModel(coefficients)
     p2 = PottsModelOneHot(coefficients)
 
-    x = F.one_hot(torch.arange(0, num_bits), num_bits)
+    size = (6,)
+    x = torch.randint(0, 3, size=size)
+    og = x
 
-    for item in coefficients.keys():
-        print()
-        #print(item, x[:, item], coefficients[item])
-    #print("Coeff:\n", coefficients.keys())
-    #print("Vals:\n", [x[:, key] for key in coefficients.keys()])
-    print("One-hot result", p2(x))
+    print("x", x.shape)
+    print(x)
 
+    x = F.one_hot(x)
+    print("x", x.shape)
+    print(x)
 
-    '''
+    result = p2(x)
+    print("One-hot result", result.shape)
+    print(result)
+
+    print("Normal result", p1(og))
+
+def testPottsOneHotMultiDimension():
+
+    print("\nTest One Hot Multi Dimension")
+
+    num_bits = 6 #random.randint(5, 30)
+
     coefficients = polytensor.generators.coeffPUBORandomSampler(
-        num_bits, [num_bits, 1, 1, 1], lambda: torch.rand(1)
+        num_bits, [num_bits, 5, 5, 5], lambda: torch.rand(1)
     )
-    print(coefficients)
 
-    num_classes = 5
-    size =  (4, 4, 4)
-    batch_size = 10
+    p1 = PottsModel(coefficients)
+    p2 = PottsModelOneHot(coefficients)
 
-    indices = torch.randint(0, num_classes, size=size)
-    one_hot_encoded = torch.nn.functional.one_hot(indices, num_classes=num_classes)
-    one_hot_batch = one_hot_encoded.unsqueeze(0).expand(100, -1, -1, -1, -1)
-    print(one_hot_batch)
-    print(one_hot_batch.shape)
-    '''
+    size = (6, 5, 6)
+    x = torch.randint(0, 3, size=size)
+
+    print("x", x.shape)
+    print(x)
+
+    og = x
+    x = F.one_hot(x)
+    print("x", x.shape)
+    print(x)
+
+    result = p2(x)
+    print("One-hot result", result.shape)
+    print(result)
+
+    print("Normal result", p1(og))
+
+def testSpeed():
+    print("\nTest Speed")
+
+    num_bits = 5 #random.randint(5, 30)
+    coefficients = polytensor.generators.coeffPUBORandomSampler(
+        num_bits, [num_bits, 5, 5, 5], lambda: torch.rand(1)
+    )
+    p1 = PottsModel(coefficients)
+    p2 = PottsModelOneHot(coefficients)
+
+    size = (6, 5, 5, 5)
+    x = torch.randint(0, 3, size=size)
+
+    og = x
+    x = F.one_hot(x)
+    print("x", x.shape)
+    print(x)
+
+    result = p1(og)
+    result2 = p2(x)
+
+    print(result.shape, result2.shape)
+    print(result)
+    print(result2)
+
 
 testPotts()
+testPottsMultiDimension()
+testPottsOneHot()
+testPottsOneHotMultiDimension()
+testSpeed()
