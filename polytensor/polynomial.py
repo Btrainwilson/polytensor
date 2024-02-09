@@ -169,3 +169,84 @@ class DensePolynomial(torch.nn.Module):
 
     def __repr__(self):
         return f"DensePolynomial(degree={len(self.coefficients)-1})"
+
+class PottsModel(Polynomial):
+    @beartype
+    def __init__(
+        self,
+        coefficients: dict[List[int], Union[complex, float, int, torch.Tensor]],
+        device: str = "cpu",
+        dtype=torch.float,
+        **kwargs,
+    ):
+        super().__init__()
+        self.coefficients = coefficients
+        self.device = device
+        self.dtype = dtype
+
+
+        self.validate()
+
+
+    def forward(self, x):
+        r = False
+        sum = 0.0
+
+        if len(x.shape) == 1:
+            x = x.unsqueeze(0)
+            r = True
+
+        idx = len(x.shape) - 1
+        for key, v in self.coefficients.items():
+            sum = sum - v * torch.eq(torch.max(x[..., key], idx).values, torch.min(x[..., key], idx).values)
+
+        if r:
+            return sum.squeeze()
+
+        return sum
+
+
+    def validate(self):
+        return
+      
+
+
+class PottsModelOneHot(Polynomial):
+    @beartype
+    def __init__(
+        self,
+        coefficients: dict[List[int], Union[complex, float, int, torch.Tensor]],
+        device: str = "cpu",
+        dtype=torch.float,
+        **kwargs,
+    ):
+        super().__init__()
+        self.coefficients = coefficients
+        self.device = device
+        self.dtype = dtype
+
+
+        self.validate()
+
+
+    def forward(self, x):
+        r = False
+        sum = 0.0
+
+        if len(x.shape) == 1:
+            x = x.unsqueeze(0)
+            r = True
+
+        x_dim = len(x.shape) - 2
+        
+        for key, v in self.coefficients.items():
+            sum = sum - v * torch.sum(torch.prod(x[..., key,:], dim=x_dim), dim=x_dim)
+
+        if r:
+            return sum.squeeze()
+
+
+        return sum
+        
+    def validate(self):
+        return
