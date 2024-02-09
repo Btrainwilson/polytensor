@@ -5,10 +5,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>polytensor.polynomial module &#8212; PolyTensor 0.1 documentation</title>
+    <title>polytensor.polynomial module &#8212; PolyTensor 0.0.4 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
-    <script src="_static/documentation_options.js?v=2709fde1"></script>
+    <script src="_static/documentation_options.js?v=8c5712d9"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -38,9 +38,10 @@
 <span id="polytensor-polynomial-module"></span><h1>polytensor.polynomial module<a class="headerlink" href="#module-polytensor.polynomial" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="polytensor.polynomial.DensePolynomial">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">polytensor.polynomial.</span></span><span class="sig-name descname"><span class="pre">DensePolynomial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coefficients</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">torch.float32</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#polytensor.polynomial.DensePolynomial" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#polytensor.polynomial.Polynomial" title="polytensor.polynomial.Polynomial"><code class="xref py py-class docutils literal notranslate"><span class="pre">Polynomial</span></code></a></p>
-<p>A Dense PyTorch autograd differentiable polynomial function. Uses einsum to compute the polynomial function.</p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">polytensor.polynomial.</span></span><span class="sig-name descname"><span class="pre">DensePolynomial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coefficients</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#polytensor.polynomial.DensePolynomial" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<p>A dense autograd differentiable polynomial function.
+Consumes O(n^d) memory where n is the number of terms and d is the degree of the term.</p>
 <p><span class="math notranslate nohighlight">\(f(x) = \sum_{s \in S}\sigma_s\prod_{i \in s}x_i\)</span></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -53,10 +54,7 @@
 <dd><p>Computes the polynomial function specified by the polynomial coefficients and the input tensor x.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>coefficients</strong> – Dictionary of coefficients. Each key represents the monomial variables and the value is the coefficient.</p></li>
-<li><p><strong>x</strong> – The input to the polynomial function.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>x</strong> – Batched input tensor of shape <span class="math notranslate nohighlight">\(BxS1x...N\)</span>.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The value of the polynomial function.</p>
@@ -70,9 +68,8 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="polytensor.polynomial.DensePolynomial.polyD">
 <span class="sig-name descname"><span class="pre">polyD</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#polytensor.polynomial.DensePolynomial.polyD" title="Link to this definition">¶</a></dt>
-<dd><p>Computes the polynomial given by tensor T acting on input vector x</p>
-<p>We use the Einstein summation convention to compute the polynomial.
-For example, if we given the 3-dimensional polynomial</p>
+<dd><p>Computes the polynomial given by tensor T acting on input vector x
+We use the Einstein summation convention to compute the polynomial.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -98,12 +95,12 @@ For example, if we given the 3-dimensional polynomial</p>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="polytensor.polynomial.Polynomial">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">polytensor.polynomial.</span></span><span class="sig-name descname"><span class="pre">Polynomial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#polytensor.polynomial.Polynomial" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<dt class="sig sig-object py" id="polytensor.polynomial.PottsModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">polytensor.polynomial.</span></span><span class="sig-name descname"><span class="pre">PottsModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coefficients</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">complex</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#polytensor.polynomial.PottsModel" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
 <dl class="py method">
-<dt class="sig sig-object py" id="polytensor.polynomial.Polynomial.forward">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#polytensor.polynomial.Polynomial.forward" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="polytensor.polynomial.PottsModel.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#polytensor.polynomial.PottsModel.forward" title="Link to this definition">¶</a></dt>
 <dd><p>Defines the computation performed at every call.</p>
 <p>Should be overridden by all subclasses.</p>
 <div class="admonition note">
@@ -115,24 +112,33 @@ registered hooks while the latter silently ignores them.</p>
 </div>
 </dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="polytensor.polynomial.Polynomial.training">
-<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#polytensor.polynomial.Polynomial.training" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+</dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="polytensor.polynomial.PottsModelOneHot">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">polytensor.polynomial.</span></span><span class="sig-name descname"><span class="pre">PottsModelOneHot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coefficients</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">complex</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#polytensor.polynomial.PottsModelOneHot" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
 <dl class="py method">
-<dt class="sig sig-object py" id="polytensor.polynomial.Polynomial.validate">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#polytensor.polynomial.Polynomial.validate" title="Link to this definition">¶</a></dt>
-<dd><p>Validates the coefficients.</p>
+<dt class="sig sig-object py" id="polytensor.polynomial.PottsModelOneHot.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#polytensor.polynomial.PottsModelOneHot.forward" title="Link to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="polytensor.polynomial.SparsePolynomial">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">polytensor.polynomial.</span></span><span class="sig-name descname"><span class="pre">SparsePolynomial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coefficients</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">complex</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">torch.float32</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#polytensor.polynomial.SparsePolynomial" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#polytensor.polynomial.Polynomial" title="polytensor.polynomial.Polynomial"><code class="xref py py-class docutils literal notranslate"><span class="pre">Polynomial</span></code></a></p>
-<p>A Sparse PyTorch autograd differentiable polynomial function.</p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">polytensor.polynomial.</span></span><span class="sig-name descname"><span class="pre">SparsePolynomial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coefficients</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">complex</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#polytensor.polynomial.SparsePolynomial" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<p>A sparse autograd differentiable polynomial function.</p>
 <p><span class="math notranslate nohighlight">\(f(x) = \sum_{s \in S}\sigma_s\prod_{i \in s}x_i\)</span></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -146,8 +152,8 @@ registered hooks while the latter silently ignores them.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>coefficients</strong> (<em>dict</em>) – Each key represents the monomial variables and the value is the coefficient.</p></li>
-<li><p><strong>x</strong> (<em>torch.Tensor</em>) – The input to the polynomial function.</p></li>
+<li><p><strong>coefficients</strong> – dict Each key represents the monomial variables and the value is the coefficient.</p></li>
+<li><p><strong>x</strong> – torch.Tensor Batched input tensor of shape BxS1x…N.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -157,12 +163,6 @@ registered hooks while the latter silently ignores them.</p>
 <dd class="field-odd"><p>torch.Tensor</p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="polytensor.polynomial.SparsePolynomial.validate">
-<span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#polytensor.polynomial.SparsePolynomial.validate" title="Link to this definition">¶</a></dt>
-<dd><p>Checks if the coefficients are valid for a sparse polynomial.</p>
 </dd></dl>
 
 </dd></dl>
@@ -192,7 +192,8 @@ registered hooks while the latter silently ignores them.</p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">polytensor.polynomial module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#polytensor.polynomial.DensePolynomial"><code class="docutils literal notranslate"><span class="pre">DensePolynomial</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#polytensor.polynomial.Polynomial"><code class="docutils literal notranslate"><span class="pre">Polynomial</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#polytensor.polynomial.PottsModel"><code class="docutils literal notranslate"><span class="pre">PottsModel</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#polytensor.polynomial.PottsModelOneHot"><code class="docutils literal notranslate"><span class="pre">PottsModelOneHot</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#polytensor.polynomial.SparsePolynomial"><code class="docutils literal notranslate"><span class="pre">SparsePolynomial</span></code></a></li>
 </ul>
 </li>

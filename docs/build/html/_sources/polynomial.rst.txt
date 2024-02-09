@@ -1,2 +1,2 @@
-.. autofunction:: polytensor.Polynomial
+.. autofunction:: polytensor
 

@@ -40,7 +40,6 @@ nvidia-nvtx-cu12==12.1.105
 packaging==23.2
 pkginfo==1.9.6
 pluggy==1.3.0
-polytensor @ git+https://github.com/btrainwilson/polytensor.git@e0c293f1763a3d89e7c15dd5c34ec71f5b757de9
 pycparser==2.21
 Pygments==2.17.2
 pytest==7.4.4

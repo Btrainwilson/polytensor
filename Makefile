@@ -7,10 +7,15 @@ TIN = $(TENV)/bin
 
 all: doc .tenv
 
+
+
 $(TENV): testrequirements.txt
 	$(PY) -m venv $(TENV)
 	$(TIN)/pip install --upgrade -r testrequirements.txt
 	touch $(TENV)
+
+update: 
+	$(TIN)/pip install git+https://github.com/btrainwilson/polytensor.git@prod
 
 .PHONY: doc
 doc: $(TENV)

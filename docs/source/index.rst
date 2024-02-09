@@ -71,6 +71,7 @@ Each term is specified by a list of indeces and a value. For example, the coeffi
 .. code-block:: python
 
     terms = {
+      ()     : 0.0,     # 0.0 * 1 - the constant term
       (0,)   : 1.0,     # 1.0 * x_0
       (1,)   : 2.0,     # 2.0 * x_1
       (0, 1) : 3.0,     # 3.0 * x_0 * x_1
@@ -148,9 +149,5 @@ At a glance, the ``DensePolynomial`` stores the terms in a list of dense ``torch
 Sparse vs Dense Representation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-When to use the sparse representation? The sparse representation is more efficient than the dense representation when the number of terms :math:`N` is small compared to the number of possible terms, i.e., 
+When to use the sparse representation? The sparse representation is more efficient than the dense representation when the degree :math:`d` of the terms :math:`N` is large. Because the number of dense terms scales exponentially, i.e., :math:`n^d` where :math:`n` is the number of variables in the polynomial. The einsum computation using this representation is way faster than the sparse enumeration so long as there exists enough memory for the computation. Under the hood of ``polytensor.DensePolynomial``, ``torch.einsum`` exploits CUDA acceleration to parallelize the computation. 
 
-.. math::
-    N << n^d
-
-For ``polytensor.DensePolynomial``, The number of terms in the tensor for degree :math:`d` is :math:`n^d` where :math:`n` is the number of variables in the polynomial. The einsum computation using this representation is way faster than the sparse enumeration if the number of terms is similar to the size of the tensors. Under the hood of ``polytensor.DensePolynomial``, ``torch.einsum`` exploits CUDA acceleration to parallelize the computation. However, if the number of terms in the polynomial is nowhere close to the number of terms in the dense tensor representation, then most of the terms in the dense tensors will be :math:`0` and the sparse polynomial is a better representation. For example, if your polynomial has :math:`100` terms, most of which are quadratic or linear, then a dense representation is likely more efficient. However, if those 100 terms are distributed throughout 6 degree monomials, then a sparse representation is more efficient.
