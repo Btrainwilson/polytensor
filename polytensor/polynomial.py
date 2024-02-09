@@ -10,6 +10,7 @@
 import torch
 from torch import nn
 import numpy as np
+import funcy
 from beartype import beartype
 from beartype.typing import Union
 
@@ -170,83 +171,58 @@ class DensePolynomial(torch.nn.Module):
     def __repr__(self):
         return f"DensePolynomial(degree={len(self.coefficients)-1})"
 
-class PottsModel(Polynomial):
+
+class PottsModel(torch.nn.Module):
     @beartype
     def __init__(
         self,
-        coefficients: dict[List[int], Union[complex, float, int, torch.Tensor]],
-        device: str = "cpu",
-        dtype=torch.float,
-        **kwargs,
+        coefficients: dict[list[int], Union[complex, float, int, torch.Tensor]],
     ):
         super().__init__()
+
+        self.terms = nn.ParameterDict(
+            {
+                str(tuple(sorted(k))): nn.Parameter(torch.Tensor([v]))
+                for k, v in coefficients.items()
+            }
+        )
+
         self.coefficients = coefficients
-        self.device = device
-        self.dtype = dtype
-
-
-        self.validate()
-
 
     def forward(self, x):
-        r = False
         sum = 0.0
 
-        if len(x.shape) == 1:
-            x = x.unsqueeze(0)
-            r = True
-
-        idx = len(x.shape) - 1
         for key, v in self.coefficients.items():
-            sum = sum - v * torch.eq(torch.max(x[..., key], idx).values, torch.min(x[..., key], idx).values)
-
-        if r:
-            return sum.squeeze()
+            sum = sum + v * torch.eq(
+                torch.max(x[..., key], -1).values, torch.min(x[..., key], -1).values
+            )
 
         return sum
 
 
-    def validate(self):
-        return
-      
-
-
-class PottsModelOneHot(Polynomial):
+class PottsModelOneHot(torch.nn.Module):
     @beartype
     def __init__(
         self,
-        coefficients: dict[List[int], Union[complex, float, int, torch.Tensor]],
-        device: str = "cpu",
-        dtype=torch.float,
-        **kwargs,
+        coefficients: dict[list[int], Union[complex, float, int, torch.Tensor]],
     ):
         super().__init__()
+
+        self.terms = nn.ParameterDict(
+            {
+                str(tuple(sorted(k))): nn.Parameter(torch.Tensor([v]))
+                for k, v in coefficients.items()
+            }
+        )
+
         self.coefficients = coefficients
-        self.device = device
-        self.dtype = dtype
-
-
-        self.validate()
-
 
     def forward(self, x):
-        r = False
         sum = 0.0
-
-        if len(x.shape) == 1:
-            x = x.unsqueeze(0)
-            r = True
 
         x_dim = len(x.shape) - 2
-        
+
         for key, v in self.coefficients.items():
-            sum = sum - v * torch.sum(torch.prod(x[..., key,:], dim=x_dim), dim=x_dim)
-
-        if r:
-            return sum.squeeze()
-
+            sum = sum + v * torch.sum(torch.prod(x[..., key, :], dim=x_dim), dim=x_dim)
 
         return sum
-        
-    def validate(self):
-        return
