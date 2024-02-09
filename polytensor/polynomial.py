@@ -8,32 +8,17 @@
 ###############################################################################
 
 import torch
+from torch import nn
 import numpy as np
 from beartype import beartype
-from beartype.typing import List, Union
-from enum import Enum
-from abc import ABC, abstractmethod
-import logging
+from beartype.typing import Union
 
 
-class Polynomial(torch.nn.Module, ABC):
-    @abstractmethod
-    def forward(self):
-        raise NotImplementedError("Polynomial is an abstract class.")
-
-    @abstractmethod
-    def validate(self):
-        """
-        Validates the coefficients.
-        """
-        raise NotImplementedError("Polynomial is an abstract class.")
-
-
-class SparsePolynomial(Polynomial):
+class SparsePolynomial(torch.nn.Module):
     """
-    A Sparse PyTorch autograd differentiable polynomial function.
+    A sparse autograd differentiable polynomial function.
 
-    :math:`f(x) = \sum_{s \in S}\sigma_s\prod_{i \in s}x_i`
+    :math:`f(x) = \\sum_{s \\in S}\\sigma_s\\prod_{i \\in s}x_i`
 
     Args:
 
@@ -44,115 +29,56 @@ class SparsePolynomial(Polynomial):
     @beartype
     def __init__(
         self,
-        coefficients: dict[List[int], Union[complex, float, int, torch.Tensor]],
-        device: str = "cpu",
-        dtype=torch.float,
-        **kwargs,
+        coefficients: dict[tuple[int], Union[complex, float, int]],
     ):
         super().__init__()
 
+        # Store the coefficients as a dictionary of parameters.
+        # The key is a str representation of the monomial variables and the value is the coefficient.
+        # This is done to ensure that the parameters are registered with the module.
+        # This is necessary for the autograd and storage to work properly.
+        if not () in coefficients:
+            coefficients[()] = 0
+
+        self.terms = nn.ParameterDict(
+            {
+                str(tuple(sorted(k))): nn.Parameter(torch.Tensor([v]))
+                for k, v in coefficients.items()
+            }
+        )
+
         self.coefficients = coefficients
-        self.device = device
-        self.dtype = dtype
-        self.validate()
 
     def forward(self, x):
         """
         Computes the polynomial function specified by the polynomial coefficients and the input tensor x.
 
         Args:
-            coefficients (dict): Each key represents the monomial variables and the value is the coefficient.
+            coefficients : dict Each key represents the monomial variables and the value is the coefficient.
 
-            x (torch.Tensor): The input to the polynomial function.
+            x : torch.Tensor Batched input tensor of shape BxS1x...N.
 
         Returns:
             torch.Tensor : The value of the polynomial function.
         """
-        r = False
-        sum = 0.0
-
-        if len(x.shape) == 1:
-            x = x.unsqueeze(0)
-            r = True
+        sum = self.coefficients[()]
 
         # Scales as O(n*d) where n is the number of terms and d is the degree of the term
         for key, v in self.coefficients.items():
-            sum = sum + v * torch.prod(x[:, key], dim=-1, keepdim=True)
-
-        if r:
-            return sum.squeeze()
+            sum = sum + v * torch.prod(x[..., key], dim=-1, keepdim=True)
 
         return sum
-
-    def validate(self):
-        """
-        Checks if the coefficients are valid for a sparse polynomial.
-        """
-
-        if len(self.coefficients) == 0:
-            raise ValueError("Coefficients cannot be empty.")
-
-        for term, value in self.coefficients.items():
-            if type(value) not in [
-                int,
-                float,
-                complex,
-                torch.Tensor,
-                np.ndarray,
-            ]:
-                raise TypeError(
-                    "Coefficients must be a number, numpy array, or a tensor."
-                )
-            for t in zip(
-                [int, float, complex], [torch.int, torch.float, torch.complex]
-            ):
-                if type(value) == t[0]:
-                    if self.dtype != t[1]:
-                        logging.warning(
-                            f"Coefficient {term} is type {type(value)} and will be converted to type {self.dtype}."
-                        )
-
-            if len(term) > 1 and (np.diff(term) < 0).all():
-                raise ValueError(
-                    f"Coefficients {np.diff(term)} must be in non-decreasing order."
-                )
-
-        # Make sure all coefficients are unique
-        if len(self.coefficients.keys()) != len(set(self.coefficients.keys())):
-            raise ValueError("Coefficients must be unique.")
-
-        self.coeff_vector = torch.nn.ParameterList()
-        self.coeff_map = {}
-        for i, term in enumerate(self.coefficients.keys()):
-            self.coeff_map[term] = i
-            if type(value) not in [torch.Tensor]:
-                self.coeff_vector.append(
-                    torch.nn.Parameter(
-                        torch.tensor(
-                            self.coefficients[term],
-                            dtype=self.dtype,
-                            device=self.device,
-                        )
-                    )
-                )
-            else:
-                self.coeff_vector.append(
-                    torch.nn.Parameter(
-                        self.coefficients[term].to(self.dtype).to(self.device)
-                    )
-                )
-
-        return True
 
     def __repr__(self):
         return f"SparseCoefficients({self.coefficients})"
 
 
-class DensePolynomial(Polynomial):
+class DensePolynomial(torch.nn.Module):
     """
-    A Dense PyTorch autograd differentiable polynomial function. Uses einsum to compute the polynomial function.
+    A dense autograd differentiable polynomial function.
+    Consumes O(n^d) memory where n is the number of terms and d is the degree of the term.
 
-    :math:`f(x) = \sum_{s \in S}\sigma_s\prod_{i \in s}x_i`
+    :math:`f(x) = \\sum_{s \\in S}\\sigma_s\\prod_{i \\in s}x_i`
 
     Args:
         coefficients: :math:`s` Stored as a list of tensors.
@@ -163,45 +89,31 @@ class DensePolynomial(Polynomial):
     def __init__(
         self,
         coefficients: list[torch.Tensor],
-        device: str = "cpu",
-        dtype=torch.float,
-        **kwargs,
     ):
         super().__init__()
-
-        self.coefficients = coefficients
-        self.device = device
-        self.dtype = dtype
-        self.validate()
+        self.coefficients = nn.ParameterList([nn.Parameter(c) for c in coefficients])
 
     def forward(self, x):
         """
         Computes the polynomial function specified by the polynomial coefficients and the input tensor x.
 
         Args:
-            coefficients: Dictionary of coefficients. Each key represents the monomial variables and the value is the coefficient.
-            x: The input to the polynomial function.
+            x: Batched input tensor of shape :math:`BxS1x...N`.
 
         Returns:
             torch.Tensor : The value of the polynomial function.
         """
-        if len(x.shape) == 1:
-            x = x.unsqueeze(0)
+        s = 0
 
-        s = self.polyD(x, self.coefficients[0])
-
-        if len(self.coefficients) > 1:
-            for t in self.coefficients[1:]:
-                s = s + self.polyD(x, t)
+        for t in self.coefficients:
+            s = s + self.polyD(x, t)
 
         return s
 
     def polyD(self, x, T):
         """
         Computes the polynomial given by tensor T acting on input vector x
-
         We use the Einstein summation convention to compute the polynomial.
-        For example, if we given the 3-dimensional polynomial
 
 
         Parameters:
@@ -211,7 +123,12 @@ class DensePolynomial(Polynomial):
         Returns:
             torch.Tensor : The energy for each configuration in the batch.
         """
+
         k = len(T.shape)
+
+        # Constant term
+        if T.shape == torch.Size([]):
+            return T.unsqueeze(0)
 
         params = [T, list(range(k))]
 
@@ -233,6 +150,9 @@ class DensePolynomial(Polynomial):
             raise ValueError("Coefficients cannot be empty.")
 
         for d in range(2, len(coefficients)):
+            if coefficients[d] is None:
+                continue
+
             terms = torch.nonzero(coefficients[d]).squeeze()
 
             # Check if only one term exists

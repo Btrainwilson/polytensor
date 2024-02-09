@@ -6,31 +6,6 @@ from beartype.typing import List, Callable, Union
 from collections.abc import Iterable
 
 
-def from_networkx(g: nx.Graph, key="weight"):
-    """
-    Converts a networkx graph to a dictionary of terms for a polynomial.
-
-    Args:
-        g : Networkx graph
-        key : Attribute to use for the value of the term
-    """
-    terms = {}
-    for node in list(g.nodes(data=key)):
-        if node[1] is None:
-            raise ValueError(
-                f"Node {node} must have non-None value for attribute {key}"
-            )
-        if node[1] != 0:
-            terms[tuple([node[0]])] = node[1]
-
-    # Convert edges
-    for edge in nx.to_edgelist(g):
-        if edge[1] != 0:
-            terms[edge[:2]] = edge[2]
-
-    return terms
-
-
 @beartype
 def random_combination_generator(iterable: Iterable, k: int):
     """
@@ -94,38 +69,33 @@ def coeffPUBORandomSampler(n: int, num_terms: List[int], sample_fn: Callable):
     return terms
 
 
-def denseFromSparse(
-    coeffs: dict, num_bits: Union[int, None] = None, device="cpu", dtype=torch.float
-):
+def denseFromSparse(coeffs: dict, num_bits: int):
     """
     Generates the coefficients for a dense polynomial from a sparse represention.
 
     Parameters:
         coeffs : Degree of the polynomial
+        num_bits : Number of input variables in the polynomial
 
     Returns:
         List : Tensor representing the high-dimensional triangular polynomial matrix.
     """
 
-    n = 0
-    deg = 0
-    for k, v in coeffs.items():
-        deg = max(len(k), deg)
-        n = max(n, max(k))
-    n += 1
+    new_coeffs = {}
 
-    if num_bits:
-        n = num_bits
+    for term, value in coeffs.items():
+        degree = len(term)
 
-    new_coeffs = [torch.nn.Parameter(torch.zeros(1, dtype=dtype, device=device))]
+        # Constant special case
+        if term == ():
+            new_coeffs[degree] = torch.Tensor([value])
 
-    for i in range(1, deg + 1):
-        new_coeffs.append(torch.zeros(*([n] * i), dtype=dtype, device=device))
+        if degree not in new_coeffs:
+            new_coeffs[degree] = torch.zeros(*([num_bits] * degree))
 
-    for k, v in coeffs.items():
-        new_coeffs[len(k)][k] = v
+        new_coeffs[degree][term] = value
 
-    return new_coeffs
+    return [coeff for d, coeff in sorted(new_coeffs.items())]
 
 
 def dense(n: int, degree: int, device="cuda", dtype=torch.float):
@@ -137,3 +107,7 @@ def dense(n: int, degree: int, device="cuda", dtype=torch.float):
         )
 
     return tensors
+
+
+def sparseFromDict(coefficients, dtype, device):
+    pass

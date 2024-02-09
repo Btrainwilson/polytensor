@@ -12,7 +12,7 @@ def testPolynomial():
         num_bits = random.randint(5, 30)
 
         coefficients = polytensor.generators.coeffPUBORandomSampler(
-            num_bits, [num_bits, 5, 5, 5], lambda: torch.rand(1)
+            num_bits, [num_bits, 5, 5, 5], lambda: random.random()
         )
 
         p = polytensor.SparsePolynomial(coefficients)
@@ -28,8 +28,9 @@ def testPolynomial():
         assert np.allclose(p(x).detach().cpu().numpy(), q(x).detach().cpu().numpy())
 
     terms = {
-        tuple([0]): 1.0,  # 1.0 * x_0
-        tuple([1]): 2.0,  # 2.0 * x_1
+        (): 1.0,  # 1.0
+        (0,): 1.0,  # 1.0 * x_0
+        (1,): 2.0,  # 2.0 * x_1
         (0, 1): 3.0,  # 3.0 * x_0 * x_1
         (1, 1): 5.0,  # 5.0 * x_1^2
     }
@@ -42,7 +43,7 @@ def testPolynomial():
     y_p = poly(x)
 
     # Which is equivalent to
-    y_s = 0.0
+    y_s = terms[()]
 
     for term, v in terms.items():
         y_s += v * torch.prod(x[..., term], dim=-1, keepdim=True)
@@ -59,7 +60,7 @@ def testGraphDenseVsSparse():
     b = 5
     for degreeNum in range(1, 3):
         coefficients = polytensor.generators.coeffRandomSampler(
-            num_bits, num_terms, degreeNum, lambda: torch.rand(1)
+            num_bits, num_terms, degreeNum, lambda: random.random()
         )
 
         p = polytensor.SparsePolynomial(coefficients)
