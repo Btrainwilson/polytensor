@@ -5,6 +5,10 @@ from torch.nn import functional as F
 import random
 import numpy as np
 
+import matplotlib
+
+matplotlib.use("svg")
+
 tests = [
     {
         "c": {
@@ -70,4 +74,3 @@ def testPottsOneHot():
             p(x).detach().cpu().numpy(),
             y.detach().numpy(),
         )
-
