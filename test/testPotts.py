@@ -1,9 +1,5 @@
-<<<<<<< HEAD
-from polytensor.polynomial import PottsModel, PottModelOneHot
-=======
 import polytensor
 from polytensor.polynomial import PottsModel, PottsModelOneHot
->>>>>>> a13df790984e5818c21f4fdbffdd5a4a1b629c60
 import torch
 from torch.nn import functional as F
 import random
@@ -11,11 +7,7 @@ import numpy as np
 
 
 def testPotts():
-<<<<<<< HEAD
-    print("\nTest 1")
-=======
     print("\nTest Potts")
->>>>>>> a13df790984e5818c21f4fdbffdd5a4a1b629c60
 
     num_bits = 6 #random.randint(5, 30)
 
@@ -23,18 +15,6 @@ def testPotts():
         num_bits, [num_bits, 5, 5, 5], lambda: torch.rand(1)
     )
 
-<<<<<<< HEAD
-    p = polytensor.PottsModel(coefficients)
-    p2 = PottsModelOneHot(coefficients)
-
-    x = torch.tensor([[1, 0, 1, 2, 0, 1]])
-
-    print(p(x))
-    print(p2(x))
-
-
-testPotts()
-=======
     p = PottsModel(coefficients)
 
     x = torch.tensor([[1, 0, 1, 2, 0, 1]])
@@ -161,4 +141,3 @@ testPottsMultiDimension()
 testPottsOneHot()
 testPottsOneHotMultiDimension()
 testB()
->>>>>>> a13df790984e5818c21f4fdbffdd5a4a1b629c60
