@@ -34,9 +34,10 @@ doc: $(TENV)
 
 .PHONY: test
 test: $(TENV)
-	#$(BIN)/pytest -s ./test/testCoefficients.py 
-	$(TIN)/pytest -s ./test/testPackage.py 
-	#$(BIN)/pytest -s ./test/testGrad.py 
+	#$(TIN)/pytest -s ./test/testCoefficients.py 
+	#$(TIN)/pytest -s ./test/testPackage.py 
+	#$(TIN)/pytest -s ./test/testGrad.py 
+	$(TIN)/pytest -s ./test/testPotts.py
 
 clean:
 	rm -rf $(VENV)
