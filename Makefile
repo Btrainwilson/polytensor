@@ -1,5 +1,5 @@
 PACKAGE = polytensor
-PY = python
+PY = python3
 VENV = .env
 TENV = .tenv
 BIN = $(VENV)/bin
