@@ -250,13 +250,7 @@ class DensePolynomial(Polynomial):
     def __repr__(self):
         return f"DensePolynomial(degree={len(self.coefficients)-1})"
 
-<<<<<<< HEAD
-
 class PottsModel(Polynomial):
-    
-=======
-class PottsModel(Polynomial):
->>>>>>> a13df790984e5818c21f4fdbffdd5a4a1b629c60
     @beartype
     def __init__(
         self,
@@ -270,16 +264,11 @@ class PottsModel(Polynomial):
         self.device = device
         self.dtype = dtype
 
-<<<<<<< HEAD
-    def forward(self, x):
-      
-=======
 
         self.validate()
 
 
     def forward(self, x):
->>>>>>> a13df790984e5818c21f4fdbffdd5a4a1b629c60
         r = False
         sum = 0.0
 
@@ -287,25 +276,14 @@ class PottsModel(Polynomial):
             x = x.unsqueeze(0)
             r = True
 
-<<<<<<< HEAD
-        for key, v in self.coefficients.items():
-            sum = sum - v * torch.eq(torch.max(x[:, key], 1).values, torch.min(x[:, key], 1).values)
-=======
         idx = len(x.shape) - 1
         for key, v in self.coefficients.items():
             sum = sum - v * torch.eq(torch.max(x[..., key], idx).values, torch.min(x[..., key], idx).values)
->>>>>>> a13df790984e5818c21f4fdbffdd5a4a1b629c60
 
         if r:
             return sum.squeeze()
 
         return sum
-<<<<<<< HEAD
-        
-
-class PottsModelOneHot(Polynomial):
-    
-=======
 
 
     def validate(self):
@@ -314,7 +292,6 @@ class PottsModelOneHot(Polynomial):
 
 
 class PottsModelOneHot(Polynomial):
->>>>>>> a13df790984e5818c21f4fdbffdd5a4a1b629c60
     @beartype
     def __init__(
         self,
@@ -328,16 +305,11 @@ class PottsModelOneHot(Polynomial):
         self.device = device
         self.dtype = dtype
 
-<<<<<<< HEAD
-    def forward(self, x):
-      
-=======
 
         self.validate()
 
 
     def forward(self, x):
->>>>>>> a13df790984e5818c21f4fdbffdd5a4a1b629c60
         r = False
         sum = 0.0
 
@@ -345,27 +317,16 @@ class PottsModelOneHot(Polynomial):
             x = x.unsqueeze(0)
             r = True
 
-<<<<<<< HEAD
-        for key, v in self.coefficients.items():
-            one_hot_encoded = torch.stack([torch.nn.functional.one_hot(elem) for elem in x[:, key].long()])
-            sum = sum - v * torch.sum(torch.prod(one_hot_encoded, dim=1), dim=1)
-=======
         x_dim = len(x.shape) - 2
         
         for key, v in self.coefficients.items():
             sum = sum - v * torch.sum(torch.prod(x[..., key,:], dim=x_dim), dim=x_dim)
->>>>>>> a13df790984e5818c21f4fdbffdd5a4a1b629c60
 
         if r:
             return sum.squeeze()
 
-<<<<<<< HEAD
-        return sum
-        
-=======
 
         return sum
         
     def validate(self):
         return
->>>>>>> a13df790984e5818c21f4fdbffdd5a4a1b629c60
