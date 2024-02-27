@@ -1,3 +1,6 @@
+import sys
+sys.path.append('/Users/rohanojha/Work/repohub/polytensor_new/polytensor')
+
 import polytensor
 from polytensor.polynomial import PottsModel, PottsModelOneHot
 import torch

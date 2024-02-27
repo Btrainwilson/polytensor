@@ -330,3 +330,50 @@ class PottsModelOneHot(Polynomial):
         
     def validate(self):
         return
+
+
+class ClockModelOneHot(Polynomial):
+    @beartype
+    def __init__(
+        self,
+        coefficients: dict[List[int], Union[complex, float, int, torch.Tensor]],
+        device: str = "cpu",
+        dtype=torch.float,
+        **kwargs,
+    ):
+        super().__init__()
+        self.coefficients = coefficients
+        self.device = device
+        self.dtype = dtype
+
+
+        self.validate()
+
+
+    def forward(self, x):
+        r = False
+        sum = 0.0
+
+        if len(x.shape) == 1:
+            x = x.unsqueeze(0)
+            r = True
+
+        idx = len(x.shape) - 2
+        N = x.shape[-1]
+        s_j_vec = torch.cos(2 * torch.pi * torch.arange(0, N) / N).unsqueeze(1).type(torch.LongTensor)
+        print(torch.arange(0, N))
+        print(".", s_j_vec)
+        for key, v in self.coefficients.items():
+            print("..", x[...,key,:])
+            sum = sum - v * (2 * ((torch.sum(torch.matmul(x[...,key,:],s_j_vec), dim=idx)) ** 2) - 1)
+            print(x[...,key,:].shape, s_j_vec.shape)
+            print("..", torch.matmul(x[...,key,:],s_j_vec))
+        if r:
+            return sum.squeeze()
+
+        return sum
+
+
+    def validate(self):
+        return
+      
