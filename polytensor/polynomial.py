@@ -360,14 +360,11 @@ class ClockModelOneHot(Polynomial):
 
         idx = len(x.shape) - 2
         N = x.shape[-1]
-        s_j_vec = torch.cos(2 * torch.pi * torch.arange(0, N) / N).unsqueeze(1).type(torch.LongTensor)
-        print(torch.arange(0, N))
-        print(".", s_j_vec)
+        s_j_vec = torch.cos(2 * torch.pi * torch.arange(0, N) / N).unsqueeze(1)
+
         for key, v in self.coefficients.items():
-            print("..", x[...,key,:])
-            sum = sum - v * (2 * ((torch.sum(torch.matmul(x[...,key,:],s_j_vec), dim=idx)) ** 2) - 1)
-            print(x[...,key,:].shape, s_j_vec.shape)
-            print("..", torch.matmul(x[...,key,:],s_j_vec))
+            sum = sum - v * (2 * ((torch.mean(torch.matmul(x[...,key,:], s_j_vec), dim=idx)) ** 2) - 1)
+            
         if r:
             return sum.squeeze()
 

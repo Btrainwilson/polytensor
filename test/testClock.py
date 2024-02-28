@@ -1,8 +1,5 @@
-import sys
-sys.path.append('/Users/rohanojha/Work/repohub/polytensor_new/polytensor')
-
 import polytensor
-from polytensor.polynomial import PottsModel, PottsModelOneHot, ClockModelOneHot
+from polytensor.polynomial import ClockModelOneHot
 import torch
 from torch.nn import functional as F
 import random
@@ -20,128 +17,36 @@ def testClockOneHot():
 
     p = ClockModelOneHot(coefficients)
 
-    x = torch.tensor([[1, 0, 1, 2, 0, 1]])
-    x = F.one_hot(x)
-    print(".", x.shape)
-    for item in coefficients.keys():
-        print(item, x[..., item,:], coefficients[item])
-    #print("Coeff:\n", coefficients.keys())
-    #print("Vals:\n", [x[:, key] for key in coefficients.keys()])
+    x = torch.tensor([[1, 0, 3, 2, 0, 1]])
+    x = F.one_hot(x).float()
+    
     print("Result", p(x))
 
-# def testPottsMultiDimension():
-#     print("\nTest Potts Multi Dimension")
+def testClockOneHotMultiDimension():
+    print("\nTest Clock One Hot Multi Dimension")
 
-#     num_bits = 6 #random.randint(5, 30)
-#     dimensions = 1
-#     batch_size = 5
-#     size = (batch_size,) + (num_bits,) * dimensions
-#     size = (4, 2, 2, 6)
+    num_bits = 6 #random.randint(5, 30)
 
-#     coefficients = polytensor.generators.coeffPUBORandomSampler(
-#         num_bits, [num_bits, 5, 5, 5], lambda: torch.rand(1)
-#     )
-#     print(coefficients)
+    # size = (4, 2, 2, 6)
+    size = (4, 2, 6)
 
-#     p = PottsModel(coefficients)
+    coefficients = polytensor.generators.coeffPUBORandomSampler(
+        num_bits, [num_bits, 5, 5, 5], lambda: torch.rand(1)
+    )
+    print(coefficients)
 
-#     x = torch.randint(0, 3, size=size)
-#     print("x: ", x.shape)
-#     print(x)
+    p = ClockModelOneHot(coefficients)
 
-#     result = p(x)
-#     print("Result", result.shape)
-#     print(result)
+    x = torch.randint(0, 3, size=size)
+    print("x: ", x.shape)
 
+    x = F.one_hot(x).float()
 
-# def testPottsOneHot():
+    print("x one hot: ", x.shape)
 
-#     print("\nTest One Hot")
-
-#     num_bits = 6 #random.randint(5, 30)
-
-#     coefficients = polytensor.generators.coeffPUBORandomSampler(
-#         num_bits, [num_bits, 5, 5, 5], lambda: torch.rand(1)
-#     )
-
-#     p1 = PottsModel(coefficients)
-#     p2 = PottsModelOneHot(coefficients)
-
-#     size = (6,)
-#     x = torch.randint(0, 3, size=size)
-#     og = x
-
-#     print("x", x.shape)
-#     print(x)
-
-#     x = F.one_hot(x)
-#     print("x", x.shape)
-#     print(x)
-
-#     result = p2(x)
-#     print("One-hot result", result.shape)
-#     print(result)
-
-#     print("Normal result", p1(og))
-
-# def testPottsOneHotMultiDimension():
-
-#     print("\nTest One Hot Multi Dimension")
-
-#     num_bits = 6 #random.randint(5, 30)
-
-#     coefficients = polytensor.generators.coeffPUBORandomSampler(
-#         num_bits, [num_bits, 5, 5, 5], lambda: torch.rand(1)
-#     )
-
-#     p1 = PottsModel(coefficients)
-#     p2 = PottsModelOneHot(coefficients)
-
-#     size = (6, 5, 6)
-#     x = torch.randint(0, 3, size=size)
-
-#     print("x", x.shape)
-#     print(x)
-
-#     og = x
-#     x = F.one_hot(x)
-#     print("x", x.shape)
-#     print(x)
-
-#     result = p2(x)
-#     print("One-hot result", result.shape)
-#     print(result)
-
-#     print("Normal result", p1(og))
-
-# def testB():
-#     print("\nTest B")
-
-#     num_bits = 5 #random.randint(5, 30)
-#     coefficients = polytensor.generators.coeffPUBORandomSampler(
-#         num_bits, [num_bits, 5, 5, 5], lambda: torch.rand(1)
-#     )
-#     p1 = PottsModel(coefficients)
-#     p2 = PottsModelOneHot(coefficients)
-
-#     size = (6, 5, 5, 5)
-#     x = torch.randint(0, 3, size=size)
-
-#     og = x
-#     x = F.one_hot(x)
-#     print("x", x.shape)
-#     print(x)
-
-#     result = p1(og)
-#     result2 = p2(x)
-
-#     print(result.shape, result2.shape)
-#     print(result)
-#     print(result2)
-
+    result = p(x)
+    print("Result", result.shape)
+    print(result)
 
 testClockOneHot()
-# testPottsMultiDimension()
-# testPottsOneHot()
-# testPottsOneHotMultiDimension()
-# testB()
+testClockOneHotMultiDimension()
