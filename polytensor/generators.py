@@ -6,7 +6,6 @@ from beartype.typing import List, Callable, Union
 from collections.abc import Iterable
 
 
-
 @beartype
 def random_combination_generator(iterable: Iterable, k: int):
     """
@@ -87,12 +86,12 @@ def denseFromSparse(coeffs: dict, num_bits: int):
     for term, value in coeffs.items():
         degree = len(term)
 
-    # Constant special case
+        # Constant special case
         if term == ():
             new_coeffs[degree] = torch.Tensor([value])
 
         if degree not in new_coeffs:
-                new_coeffs[degree] = torch.zeros(*([num_bits] * degree))
+            new_coeffs[degree] = torch.zeros(*([num_bits] * degree))
 
         new_coeffs[degree][term] = value
 
