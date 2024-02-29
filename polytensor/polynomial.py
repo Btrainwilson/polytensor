@@ -10,7 +10,7 @@
 import torch
 from torch import nn
 import numpy as np
-# import funcy
+import funcy
 from beartype import beartype
 from beartype.typing import Union
 
@@ -226,8 +226,7 @@ class PottsModelOneHot(torch.nn.Module):
             sum = sum + v * torch.sum(torch.prod(x[..., key, :], dim=x_dim), dim=x_dim)
 
         return sum
-    
-
+      
 
 class ClockModelOneHot(torch.nn.Module):
     @beartype
