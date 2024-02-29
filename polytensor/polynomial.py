@@ -10,7 +10,7 @@
 import torch
 from torch import nn
 import numpy as np
-import funcy
+# import funcy
 from beartype import beartype
 from beartype.typing import Union
 

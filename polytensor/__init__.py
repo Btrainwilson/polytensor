@@ -1,2 +1,2 @@
-from .polynomial import SparsePolynomial, DensePolynomial, Polynomial
+from .polynomial import SparsePolynomial, DensePolynomial
 from . import generators

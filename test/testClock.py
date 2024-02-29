@@ -1,3 +1,6 @@
+import sys
+sys.path.append('/Users/rohanojha/Work/repohub/polytensor_new/polytensor')
+
 import polytensor
 from polytensor.polynomial import ClockModelOneHot
 import torch
@@ -21,6 +24,7 @@ def testClockOneHot():
     x = F.one_hot(x).float()
     
     print("Result", p(x))
+
 
 def testClockOneHotMultiDimension():
     print("\nTest Clock One Hot Multi Dimension")
@@ -47,6 +51,7 @@ def testClockOneHotMultiDimension():
     result = p(x)
     print("Result", result.shape)
     print(result)
+
 
 testClockOneHot()
 testClockOneHotMultiDimension()
