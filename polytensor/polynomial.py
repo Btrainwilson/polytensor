@@ -19,6 +19,8 @@ class SparsePolynomial(torch.nn.Module):
     """
     A sparse autograd differentiable polynomial function.
 
+    :math:`f(x) = c + \\sum_{i}\\sigma_ix_i + \\sum_{i<j}\\sigma_{i,j}x_ix_j + ...`
+    Or more generally,
     :math:`f(x) = \\sum_{s \\in S}\\sigma_s\\prod_{i \\in s}x_i`
 
     Args:
