@@ -53,9 +53,6 @@ def testClockOneHot():
 
         x = F.one_hot(x)
 
-        # print(p(x.float()).view(-1).detach().cpu().numpy())
-        # print(y.detach().numpy())
-
         assert np.allclose(
             p(x.float()).view(-1).detach().cpu().numpy(),
             y.detach().numpy(),
