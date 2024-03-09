@@ -1,6 +1,3 @@
-import sys
-sys.path.append('/Users/rohanojha/Work/repohub/polytensor_new/polytensor')
-
 import polytensor
 from polytensor.polynomial import ClockModelOneHot
 import torch
@@ -8,50 +5,60 @@ from torch.nn import functional as F
 import random
 import numpy as np
 
+tests = [
+    {
+        "c": {
+            (0, 1): 1,
+        },
+        "x": torch.tensor([[1, 0], [0, 1], [1, 1], [0, 0]]),
+        "y": torch.Tensor([1.0, 1.0, -1.0, -1.0]),
+    },
+    {
+        "c": {
+            (0, 1): -1,
+        },
+        "x": torch.tensor([[2, 1], [0, 5], [4, 4], [2, 2]]),
+        "y": torch.Tensor([-1.0, 0.125, -0.5, -0.5]),
+    },
+    {
+        "c": {
+            (0, 1): -1,
+        },
+        "x": torch.tensor([[1, 0, 1], [0, 1, 0], [1, 1, 0], [0, 0, 1]]),
+        "y": torch.Tensor([-1.0, -1.0, 1.0, 1.0]),
+    },
+    {
+        "c": {
+            (0, 1): -1,
+            (1, 2): -1,
+        },
+        "x": torch.tensor([[1, 1, 1], [0, 1, 0], [1, 1, 0], [0, 0, 1]]),
+        "y": torch.Tensor([2.0, -2.0, 0.0, 0.0]),
+    },
+    {
+        "c": {
+            (0, 1): -1,
+            (1, 2): -1,
+        },
+        "x": torch.tensor([[2, 1, 3], [0, 5, 2], [4, 4, 4], [2, 2, 0]]),
+        "y": torch.Tensor([-1.875, -0.875, -1.0, -1.375]),
+    },
+]
 
 def testClockOneHot():
-    print("\nTest Clock One Hot")
+    for test in tests:
+        p = ClockModelOneHot(test["c"])
+        x = test["x"]
+        y = test["y"]
 
-    num_bits = 6 #random.randint(5, 30)
+        x = F.one_hot(x)
 
-    coefficients = polytensor.generators.coeffPUBORandomSampler(
-        num_bits, [num_bits, 5, 5, 5], lambda: torch.rand(1)
-    )
+        # print(p(x.float()).view(-1).detach().cpu().numpy())
+        # print(y.detach().numpy())
 
-    p = ClockModelOneHot(coefficients)
-
-    x = torch.tensor([[1, 0, 3, 2, 0, 1]])
-    x = F.one_hot(x).float()
-    
-    print("Result", p(x))
-
-
-def testClockOneHotMultiDimension():
-    print("\nTest Clock One Hot Multi Dimension")
-
-    num_bits = 6 #random.randint(5, 30)
-
-    # size = (4, 2, 2, 6)
-    size = (4, 2, 6)
-
-    coefficients = polytensor.generators.coeffPUBORandomSampler(
-        num_bits, [num_bits, 5, 5, 5], lambda: torch.rand(1)
-    )
-    print(coefficients)
-
-    p = ClockModelOneHot(coefficients)
-
-    x = torch.randint(0, 3, size=size)
-    print("x: ", x.shape)
-
-    x = F.one_hot(x).float()
-
-    print("x one hot: ", x.shape)
-
-    result = p(x)
-    print("Result", result.shape)
-    print(result)
-
+        assert np.allclose(
+            p(x.float()).view(-1).detach().cpu().numpy(),
+            y.detach().numpy(),
+        )
 
 testClockOneHot()
-testClockOneHotMultiDimension()
