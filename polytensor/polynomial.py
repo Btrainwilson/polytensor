@@ -175,6 +175,20 @@ class DensePolynomial(torch.nn.Module):
 
 
 class PottsModel(torch.nn.Module):
+    """
+    A sparse autograd differentiable Potts model function.
+
+    :math:`f(x) = \\sum_{s \\in S}\\sigma_s\\delta_(i \\in s)(x_i,...)`
+
+    Where :math:`\\delta_{i \\in s}(x_i,...)` is the Kronecker delta function acting on the variables x_i : \\forall i \\in s.
+
+
+    Args:
+
+        coefficients: :math:`s` Stored as a dictionary. Each key represents the monomial variable indices and the value is the coefficient for the term.
+
+    """
+
     @beartype
     def __init__(
         self,
@@ -203,6 +217,22 @@ class PottsModel(torch.nn.Module):
 
 
 class PottsModelOneHot(torch.nn.Module):
+    """
+    A sparse autograd differentiable One-Hot Potts model function.
+
+    :math:`f(x) = \\sum_{s \\in S}\\sigma_s\\delta_(i \\in s)(x_i,...)`
+
+    Where :math:`\\delta_{i \\in s}(x_i,...)` is the Kronecker delta function acting on the variables x_i : \\forall i \\in s.
+
+    $x_i$ is expected to be a one-hot vector.
+
+
+    Args:
+
+        coefficients: :math:`s` Stored as a dictionary. Each key represents the monomial variable indices and the value is the coefficient for the term.
+
+    """
+
     @beartype
     def __init__(
         self,
@@ -226,5 +256,38 @@ class PottsModelOneHot(torch.nn.Module):
 
         for key, v in self.coefficients.items():
             sum = sum + v * torch.sum(torch.prod(x[..., key, :], dim=x_dim), dim=x_dim)
+
+        return sum
+
+
+class ClockModelOneHot(torch.nn.Module):
+    @beartype
+    def __init__(
+        self,
+        coefficients: dict[list[int], Union[complex, float, int, torch.Tensor]],
+    ):
+        super().__init__()
+
+        self.terms = nn.ParameterDict(
+            {
+                str(tuple(sorted(k))): nn.Parameter(torch.Tensor([v]))
+                for k, v in coefficients.items()
+            }
+        )
+
+        self.coefficients = coefficients
+
+    def forward(self, x):
+        sum = 0.0
+
+        idx = len(x.shape) - 2
+        N = x.shape[-1]
+        s_j_vec = torch.cos(2 * torch.pi * torch.arange(0, N) / N).unsqueeze(1)
+
+        for key, v in self.coefficients.items():
+            sum = sum + v * (
+                2 * ((torch.mean(torch.matmul(x[..., key, :], s_j_vec), dim=idx)) ** 2)
+                - 1
+            )
 
         return sum
