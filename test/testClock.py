@@ -45,6 +45,7 @@ tests = [
     },
 ]
 
+
 def testClockOneHot():
     for test in tests:
         p = ClockModelOneHot(test["c"])
@@ -58,4 +59,6 @@ def testClockOneHot():
             y.detach().numpy(),
         )
 
+
 testClockOneHot()
+
