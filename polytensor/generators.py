@@ -1,34 +1,8 @@
 import torch
 import random
-import networkx as nx
 from beartype import beartype
 from beartype.typing import List, Callable, Union
 from collections.abc import Iterable
-
-
-def from_networkx(g: nx.Graph, key="weight"):
-    """
-    Converts a networkx graph to a dictionary of terms for a polynomial.
-
-    Args:
-        g : Networkx graph
-        key : Attribute to use for the value of the term
-    """
-    terms = {}
-    for node in list(g.nodes(data=key)):
-        if node[1] is None:
-            raise ValueError(
-                f"Node {node} must have non-None value for attribute {key}"
-            )
-        if node[1] != 0:
-            terms[tuple([node[0]])] = node[1]
-
-    # Convert edges
-    for edge in nx.to_edgelist(g):
-        if edge[1] != 0:
-            terms[edge[:2]] = edge[2]
-
-    return terms
 
 
 @beartype
