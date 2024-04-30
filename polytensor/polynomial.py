@@ -44,7 +44,7 @@ class SparsePolynomial(Polynomial):
     @beartype
     def __init__(
         self,
-        coefficients: dict[List[int], Union[complex, float, int, torch.Tensor]],
+        coefficients: dict[tuple, Union[complex, float, int, torch.Tensor]],
         device: str = "cpu",
         dtype=torch.float,
         **kwargs,
